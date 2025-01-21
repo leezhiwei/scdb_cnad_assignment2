@@ -12,7 +12,7 @@ type PongResponse struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
-func pingHandler(w http.ResponseWriter, r *http.Request) {
+func PingHandler(w http.ResponseWriter, r *http.Request) {
 	pongResponse := PongResponse{
 		Message:   "pong",
 		Timestamp: time.Now(),
