@@ -1,13 +1,9 @@
 .login-container {
     font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
     text-align: center;
-    padding: 20px;
-}
-.login-container {
     max-width: 35%;
     margin: 0 auto;
-    background: #fff;
+    background-color: #f9f9f9;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -62,4 +58,21 @@
 .login-container button:hover {
     background-color: #5cd362;
     color: white!important; 
+}
+
+/* Responsive Scaling */
+
+/* Media query for iPhone XR (portrait) and smaller screens */
+@media (max-width: 414px) {
+    .login-container {
+        max-width: 80%; /* Make the container wider on smaller screens */
+        padding: 15px;  /* Reduce padding for smaller screens */
+    }
+}
+
+/* Media query for larger screens (like iPad or larger devices) */
+@media (min-width: 768px) {
+    .login-container {
+        max-width: 30%; /* Adjust for slightly larger screens */
+    }
 }
