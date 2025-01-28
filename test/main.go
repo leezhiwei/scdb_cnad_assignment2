@@ -3,36 +3,30 @@ package main
 import (
 	"fmt"
 	"log"
-
-	"github.com/twilio/twilio-go"
-	openapi "github.com/twilio/twilio-go/rest/api/v2010"
-)
+	"context"
+	"github.com/smsapi/smsapi-go/smsapi"
 
 func sendSMS(to string, code string) error {
-	// Twilio credentials
-	accountSid := ""
-	authToken := ""
-	from := "" // Your Twilio phone number
+	// credentials
+	accessToken := ""
 
-	// Create a Twilio client
-	client := twilio.NewRestClientWithParams(twilio.ClientParams{
-		Username: accountSid,
-		Password: authToken,
-	})
+	client = smsapi.NewInternationalClient(accessToken, nil)
 
 	// Create the message
-	params := &openapi.CreateMessageParams{}
-	params.SetTo(to)
-	params.SetFrom(from)
-	params.SetBody(fmt.Sprintf("Your login code is: %s", code))
+	body := fmt.Sprintf("Your login code is: %s", code)
 
 	// Send the SMS
-	resp, err := client.Api.CreateMessage(params)
+	result, err := client.Sms.Send(context.Background(), to, body, "")
 	if err != nil {
 		return fmt.Errorf("failed to send SMS: %w", err)
 	}
 
-	log.Printf("SMS sent successfully: SID=%s", *resp.Sid)
+	log.Printf("SMS sent successfully")
+	fmt.Println("Sent messages count", result.Count)
+
+	for _, sms := range result.Collection {
+		fmt.Println(sms.Id, sms.Status, sms.Points)
+	}
 	return nil
 }
 
