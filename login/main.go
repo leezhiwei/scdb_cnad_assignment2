@@ -8,12 +8,17 @@ import (
 
 	"database/sql"
 	"encoding/json"
-	"strconv"
+	"math/rand"
+	"sync"
 	"time"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+	CORShandler "github.com/leezhiwei/common/CORSHandler"
 	"github.com/leezhiwei/common/mainhandler"
 	"github.com/leezhiwei/common/ping"
+	"github.com/twilio/twilio-go"
+	openapi "github.com/twilio/twilio-go/rest/api/v2010"
 )
 
 // user struct
@@ -23,76 +28,130 @@ type Senior struct {
 	Name     string `json:"name"`
 }
 
+var (
+	otpStore = make(map[string]string)
+	mutex    = &sync.Mutex{}
+)
+
+const debugMode = true // Set to true to use a fixed number
+
+func generateRandomNumber() string {
+	if debugMode {
+		return "123456" // Fixed number for debugging
+	}
+	time.Now().UnixNano()
+	return fmt.Sprintf("%06d", rand.Intn(999999-1)+1)
+}
+
+func sendSMS(to string, code string) error {
+	// Twilio credentials
+	accountSid := ""
+	authToken := ""
+	from := "+18454705971" // Your Twilio phone number
+
+	// Create a Twilio client
+	client := twilio.NewRestClientWithParams(twilio.ClientParams{
+		Username: accountSid,
+		Password: authToken,
+	})
+
+	// Create the message
+	params := &openapi.CreateMessageParams{}
+	params.SetTo(to)
+	params.SetFrom(from)
+	params.SetBody(fmt.Sprintf("Your login code for SDCB is: %s", code))
+
+	// Send the SMS
+	resp, err := client.Api.CreateMessage(params)
+	if err != nil {
+		return fmt.Errorf("failed to send SMS: %w", err)
+	}
+
+	log.Printf("SMS sent successfully: SID=%s", *resp.Sid)
+	return nil
+}
+
+func handleSMS(w http.ResponseWriter, r *http.Request) {
+	CORShandler.SetCORSHeaders(w)
+
+	var req struct {
+		Phone string `json:"phone"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	if req.Phone == "" {
+		http.Error(w, "Phone number required", http.StatusBadRequest)
+		return
+	}
+
+	otp := generateRandomNumber()
+	mutex.Lock()
+	otpStore[req.Phone] = otp
+	mutex.Unlock()
+
+	if !debugMode {
+		if err := sendSMS(req.Phone, otp); err != nil {
+			http.Error(w, "Failed to send SMS", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "OTP sent"})
+}
+
 // login and register
 // handleLoginOrRegister handles user login or registration based on phone number.
-func handleLoginOrRegister(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost") // Replace with your actual client origin
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+func handleLogin(w http.ResponseWriter, r *http.Request) {
+	CORShandler.SetCORSHeaders(w)
 
-	var err error
-
-	// Parse JSON request body
-	var reqData struct {
+	var req struct {
 		Phone   string `json:"phone"`
 		SMScode string `json:"smscode"`
 	}
 
-	err = json.NewDecoder(r.Body).Decode(&reqData)
-	if err != nil {
-		fmt.Println(err)
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "Invalid JSON data")
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
 		return
 	}
 
-	// Validate input
-	if reqData.Phone == "" || reqData.SMScode == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "Phone and SMS code are required")
+	mutex.Lock()
+	storedCode, exists := otpStore[req.Phone]
+	mutex.Unlock()
+
+	if !exists || storedCode != req.SMScode {
+		http.Error(w, "Invalid OTP", http.StatusUnauthorized)
 		return
 	}
 
-	// Check if the phone number exists in the database
 	var senior Senior
 	query := `SELECT SeniorID, Phone_number FROM Senior WHERE Phone_number = ?`
-	err = db.QueryRow(query, reqData.Phone).Scan(&senior.SeniorID, &senior.Phone)
+	err := db.QueryRow(query, req.Phone).Scan(&senior.SeniorID, &senior.Phone)
 
-	if err != nil {
-		if err == sql.ErrNoRows {
-			// Phone number not found; proceed with registration
-			registerQuery := `
-                INSERT INTO Senior (Phone_number) 
-                VALUES (?)
-            `
-
-			result, err := db.Exec(registerQuery, reqData.Phone)
-			if err != nil {
-				fmt.Println(err)
-				w.WriteHeader(http.StatusInternalServerError)
-				fmt.Fprintf(w, "Error registering user")
-				return
-			}
-
-			SeniorID, _ := result.LastInsertId()
-			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(map[string]string{
-				"message":   "User registered successfully",
-				"senior_id": fmt.Sprintf("%d", SeniorID),
-			})
+	// If user doesn't exist, register automatically
+	if err == sql.ErrNoRows {
+		// Insert new user
+		insertQuery := `INSERT INTO Senior (Phone_number) VALUES (?)`
+		result, err := db.Exec(insertQuery, req.Phone)
+		if err != nil {
+			http.Error(w, "Error registering user", http.StatusInternalServerError)
 			return
 		}
 
-		// Other errors
-		fmt.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, "Error checking user existence")
-		return
+		// Get new user ID
+		newID, err := result.LastInsertId()
+		if err != nil {
+			http.Error(w, "Error retrieving user ID", http.StatusInternalServerError)
+			return
+		}
+		senior.SeniorID = int(newID)
+		senior.Phone = req.Phone
 	}
 
-	// Phone number exists; proceed with login
-	// Set cookie with UserID and expire after 24 hours
 	http.SetCookie(w, &http.Cookie{
 		Name:     "senior_id",
 		Value:    fmt.Sprintf("%d", senior.SeniorID),
@@ -108,152 +167,103 @@ func handleLoginOrRegister(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// updateUserProfile allows users to update their personal details.
-func updateUserProfile(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost") // Replace with your actual client origin
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	var err error
+// // updateUserProfile allows users to update their personal details.
+// func updateUserProfile(w http.ResponseWriter, r *http.Request) {
+// 	CORShandler.SetCORSHeaders(w)
 
-	// Retrieve the user's ID from cookies
-	userIDCookie, err := r.Cookie("user_id")
-	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprintf(w, "Unauthorized: Please log in")
-		return
-	}
-	//store user id
-	userID := userIDCookie.Value
-	userIDInt, err := strconv.Atoi(userID)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "Invalid user ID")
-		return
-	}
+// 	var err error
 
-	// Parse JSON request body
-	var reqData struct {
-		Email string `json:"email"`
-		Phone string `json:"phone"`
-	}
+// 	// Retrieve the user's ID from cookies
+// 	SeniorIDCookie, err := r.Cookie("senior_id")
+// 	if err != nil {
+// 		w.WriteHeader(http.StatusUnauthorized)
+// 		fmt.Fprintf(w, "Unauthorized: Please log in")
+// 		return
+// 	}
+// 	//store user id
+// 	SeniorID := SeniorIDCookie.Value
+// 	SeniorIDInt, err := strconv.Atoi(SeniorID)
+// 	if err != nil {
+// 		w.WriteHeader(http.StatusBadRequest)
+// 		fmt.Fprintf(w, "Invalid user ID")
+// 		return
+// 	}
 
-	err = json.NewDecoder(r.Body).Decode(&reqData)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "Invalid JSON data")
-		return
-	}
+// 	// Parse JSON request body
+// 	var reqData struct {
+// 		Email string `json:"email"`
+// 		Phone string `json:"phone"`
+// 	}
 
-	// Validate inputs
-	if reqData.Email == "" && reqData.Phone == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "At least one field (email or phone) must be provided")
-		return
-	}
+// 	err = json.NewDecoder(r.Body).Decode(&reqData)
+// 	if err != nil {
+// 		w.WriteHeader(http.StatusBadRequest)
+// 		fmt.Fprintf(w, "Invalid JSON data")
+// 		return
+// 	}
 
-	// Update the user's profile in the database for user email and phone
-	query := `
-        UPDATE users
-        SET Email = COALESCE(NULLIF(?, ''), Email),
-            Phone = COALESCE(NULLIF(?, ''), Phone),
-            UpdatedAt = NOW()
-        WHERE UserID = ?
-    `
-	_, err = db.Exec(query, reqData.Email, reqData.Phone, userID)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, "Error updating user profile")
-		return
-	}
+// 	// Validate inputs
+// 	if reqData.Email == "" && reqData.Phone == "" {
+// 		w.WriteHeader(http.StatusBadRequest)
+// 		fmt.Fprintf(w, "At least one field (email or phone) must be provided")
+// 		return
+// 	}
 
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Profile updated successfully")
-}
+// 	// Update the user's profile in the database for user email and phone
+// 	query := `
+//         UPDATE users
+//         SET Email = COALESCE(NULLIF(?, ''), Email),
+//             Phone = COALESCE(NULLIF(?, ''), Phone),
+//             UpdatedAt = NOW()
+//         WHERE UserID = ?
+//     `
+// 	_, err = db.Exec(query, reqData.Email, reqData.Phone, SeniorID)
+// 	if err != nil {
+// 		w.WriteHeader(http.StatusInternalServerError)
+// 		fmt.Fprintf(w, "Error updating user profile")
+// 		return
+// 	}
 
-// viewUserProfile allows users to view their membership status and rental history.
-func viewUserProfile(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost") // Replace with your actual client origin
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+// 	w.WriteHeader(http.StatusOK)
+// 	fmt.Fprintf(w, "Profile updated successfully")
+// }
 
-	var err error
-	// Retrieve the user's ID from cookies, not allow access if there is no cookies
-	userIDCookie, err := r.Cookie("user_id")
-	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprintf(w, "Unauthorized: Please log in")
-		return
-	}
-	//store user id
-	userID := userIDCookie.Value
-	userIDInt, err := strconv.Atoi(userID)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "Invalid user ID")
-		return
-	}
+// // viewUserProfile allows users to view their membership status and rental history.
+// func viewUserProfile(w http.ResponseWriter, r *http.Request) {
+// 	CORShandler.SetCORSHeaders(w)
 
-	// Query user details
-	var user User
-	query := `
-        SELECT Email, Phone, MembershipTierID, MembershipPoint, CreatedAt, UpdatedAt
-        FROM users
-        WHERE UserID = ?
-    `
-	err = db.QueryRow(query, userID).Scan(&user.Email, &user.Phone, &user.MembershipTierID, &user.MembershipPoint, &user.CreatedAt, &user.UpdatedAt)
-	if err != nil {
-		log.Fatal(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, "Error retrieving user profile")
-		return
-	}
+// 	var err error
+// 	// Retrieve the user's ID from cookies, not allow access if there is no cookies
+// 	SeniorIDCookie, err := r.Cookie("senior_id")
+// 	if err != nil {
+// 		w.WriteHeader(http.StatusUnauthorized)
+// 		fmt.Fprintf(w, "Unauthorized: Please log in")
+// 		return
+// 	}
+// 	//store user id
+// 	SeniorID := SeniorIDCookie.Value
+// 	SeniorIDInt, err := strconv.Atoi(SeniorID)
+// 	if err != nil {
+// 		w.WriteHeader(http.StatusBadRequest)
+// 		fmt.Fprintf(w, "Invalid user ID")
+// 		return
+// 	}
 
-	// Rental struct user for retrice rental history
-	type Reservation struct {
-		ReservationID int       `json:"reservation_id"`
-		VehicleID     int       `json:"vehicle_id"`
-		StartTime     time.Time `json:"start_time"`
-		EndTime       time.Time `json:"end_time"`
-		Status        string    `json:"status"`
-	}
-	//retrice from database according to user ID
-	reservations := []Reservation{}
-	query = `
-        SELECT ReservationID, VehicleID, StartTime, EndTime, Status
-        FROM reservations
-        WHERE UserID = ?
-        ORDER BY CreatedAt DESC
-    `
-	rows, err := db.Query(query, userID)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, "Error retrieving rental history")
-		return
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var reservation Reservation
-		err := rows.Scan(&reservation.ReservationID, &reservation.VehicleID, &reservation.StartTime, &reservation.EndTime, &reservation.Status)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprintf(w, "Error processing rental history")
-			return
-		}
-		reservations = append(reservations, reservation)
-	}
-
-	// Create response
-	response := map[string]interface{}{
-		"user":          user,
-		"rentalHistory": reservations,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
-}
+// 	// Query user details
+// 	var senior Senior
+// 	query := `
+//         SELECT Email, Phone, MembershipTierID, MembershipPoint, CreatedAt, UpdatedAt
+//         FROM users
+//         WHERE UserID = ?
+//     `
+// 	err = db.QueryRow(query, seniorID).Scan(&user.Email, &user.Phone, &user.MembershipTierID, &user.MembershipPoint, &user.CreatedAt, &user.UpdatedAt)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 		w.WriteHeader(http.StatusInternalServerError)
+// 		fmt.Fprintf(w, "Error retrieving user profile")
+// 		return
+// 	}
+// }
 
 type Config struct {
 	Database struct {
