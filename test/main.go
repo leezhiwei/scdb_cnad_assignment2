@@ -3,39 +3,59 @@ package main
 import (
 	"fmt"
 	"log"
-	"context"
-	"github.com/smsapi/smsapi-go/smsapi"
+	"math/rand"
+	"time"
+
+	"github.com/twilio/twilio-go"
+	openapi "github.com/twilio/twilio-go/rest/api/v2010"
+)
+
+const debugMode = true // Set to true to use a fixed number
+
+func generateRandomNumber() string {
+	if debugMode {
+		return "123456" // Fixed number for debugging
+	}
+	time.Now().UnixNano()
+	return fmt.Sprintf("%06d", rand.Intn(999999-1)+1)
+}
 
 func sendSMS(to string, code string) error {
-	// credentials
-	accessToken := ""
+	// Twilio credentials
+	accountSid := ""
+	authToken := ""
+	from := "+18454705971" // Your Twilio phone number
 
-	client = smsapi.NewInternationalClient(accessToken, nil)
+	// Create a Twilio client
+	client := twilio.NewRestClientWithParams(twilio.ClientParams{
+		Username: accountSid,
+		Password: authToken,
+	})
 
 	// Create the message
-	body := fmt.Sprintf("Your login code is: %s", code)
+	params := &openapi.CreateMessageParams{}
+	params.SetTo(to)
+	params.SetFrom(from)
+	params.SetBody(fmt.Sprintf("Your login code for SDCB is: %s", code))
 
 	// Send the SMS
-	result, err := client.Sms.Send(context.Background(), to, body, "")
+	resp, err := client.Api.CreateMessage(params)
 	if err != nil {
 		return fmt.Errorf("failed to send SMS: %w", err)
 	}
 
-	log.Printf("SMS sent successfully")
-	fmt.Println("Sent messages count", result.Count)
-
-	for _, sms := range result.Collection {
-		fmt.Println(sms.Id, sms.Status, sms.Points)
-	}
+	log.Printf("SMS sent successfully: SID=%s", *resp.Sid)
 	return nil
 }
 
 func main() {
 	// Example usage
-	toPhoneNumber := "+65 85178498" // User's phone number
-	loginCode := "123456"           // Randomly generated login code
-
-	if err := sendSMS(toPhoneNumber, loginCode); err != nil {
-		log.Fatalf("Error sending SMS: %v", err)
+	toPhoneNumber := "+65 91542235"     // User's phone number
+	loginCode := generateRandomNumber() // Randomly generated login code
+	fmt.Println(loginCode)
+	if !debugMode {
+		if err := sendSMS(toPhoneNumber, loginCode); err != nil {
+			log.Fatalf("Error sending SMS: %v", err)
+		}
 	}
 }
