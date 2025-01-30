@@ -14,5 +14,5 @@ require (
 
 require (
 	github.com/leezhiwei/common v1.0.0
-	github.com/twilio/twilio-go v1.23.10
+	github.com/twilio/twilio-go v1.23.11
 )
