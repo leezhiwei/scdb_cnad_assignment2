@@ -52,7 +52,15 @@ $("#login").on("click", function () {
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify({ phone: phone, smscode: smsCode }),
-        success: function (response) {
+        success: function (resptext) {
+            try{
+                response = JSON.parse(resptext)
+            }
+            catch{
+                alert("Internal Server Error")
+                alert(`Error: ${resptext}`)
+                console.log(resptext)
+            }
             if (response.senior_id) {
                 alert("Login successful!");
                 document.cookie = `senior_id=${response.senior_id}; path=/`;

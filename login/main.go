@@ -69,10 +69,10 @@ func sendSMS(to string, code string) error {
 }
 
 func handleSMS(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost") // Replace with your actual client origin
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS") // cors
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	var preflight bool = CORShandler.SetCORSHeaders(&w, r)
+	if preflight {
+		return
+	}
 
 	var req struct {
 		Phone string `json:"phone"`
@@ -107,7 +107,10 @@ func handleSMS(w http.ResponseWriter, r *http.Request) {
 // login and register
 // handleLoginOrRegister handles user login or registration based on phone number.
 func handleLogin(w http.ResponseWriter, r *http.Request) {
-	CORShandler.SetCORSHeaders(&w)
+	var preflight bool = CORShandler.SetCORSHeaders(&w, r)
+	if preflight {
+		return
+	}
 
 	var req struct {
 		Phone   string `json:"phone"`
@@ -123,6 +126,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 	storedCode, exists := otpStore[req.Phone]
 	mutex.Unlock()
 
+	fmt.Println(exists)
 	if !exists || storedCode != req.SMScode {
 		http.Error(w, "Invalid OTP", http.StatusUnauthorized)
 		return
@@ -162,6 +166,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 	})
 
 	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{
 		"message":   "Login successful",
 		"senior_id": fmt.Sprintf("%d", senior.SeniorID),
@@ -325,9 +330,9 @@ func main() {
 	var port int = config.ServPort
 	var prefix string = "/api/v1/login"
 	router := mux.NewRouter()
-	router.HandleFunc(fmt.Sprintf("%s/ping", prefix), ping.PingHandler).Methods("GET")
-	router.HandleFunc(fmt.Sprintf("%s/sendsms", prefix), handleSMS).Methods("POST")
-	router.HandleFunc(fmt.Sprintf("%s/login", prefix), handleLogin).Methods("POST")
+	router.HandleFunc(fmt.Sprintf("%s/ping", prefix), ping.PingHandler).Methods("GET", "OPTIONS")
+	router.HandleFunc(fmt.Sprintf("%s/sendsms", prefix), handleSMS).Methods("POST", "OPTIONS")
+	router.HandleFunc(fmt.Sprintf("%s/login", prefix), handleLogin).Methods("POST", "OPTIONS")
 	router.Use(mainhandler.LogReq)
 	log.Println(fmt.Sprintf("Login Server running at port %d", port))
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), router))
