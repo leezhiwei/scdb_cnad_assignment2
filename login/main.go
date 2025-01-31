@@ -33,10 +33,8 @@ var (
 	mutex    = &sync.Mutex{}
 )
 
-const debugMode = true // Set to true to use a fixed number
-
 func generateRandomNumber() string {
-	if debugMode {
+	if config.DebugMode {
 		return "123456" // Fixed number for debugging
 	}
 	time.Now().UnixNano()
@@ -44,10 +42,9 @@ func generateRandomNumber() string {
 }
 
 func sendSMS(to string, code string) error {
-	// Twilio credentials
-	accountSid := ""
-	authToken := ""
-	from := "+18454705971" // Your Twilio phone number
+	var accountSid string = config.APIToken.Twilio.AccountSID
+	var authToken string = config.APIToken.Twilio.AuthToken
+	var from string = config.APIToken.Twilio.FromNumber
 
 	// Create a Twilio client
 	client := twilio.NewRestClientWithParams(twilio.ClientParams{
@@ -72,7 +69,10 @@ func sendSMS(to string, code string) error {
 }
 
 func handleSMS(w http.ResponseWriter, r *http.Request) {
-	CORShandler.SetCORSHeaders(w)
+	var preflight bool = CORShandler.SetCORSHeaders(&w, r)
+	if preflight {
+		return
+	}
 
 	var req struct {
 		Phone string `json:"phone"`
@@ -93,7 +93,7 @@ func handleSMS(w http.ResponseWriter, r *http.Request) {
 	otpStore[req.Phone] = otp
 	mutex.Unlock()
 
-	if !debugMode {
+	if !config.DebugMode {
 		if err := sendSMS(req.Phone, otp); err != nil {
 			http.Error(w, "Failed to send SMS", http.StatusInternalServerError)
 			return
@@ -107,7 +107,10 @@ func handleSMS(w http.ResponseWriter, r *http.Request) {
 // login and register
 // handleLoginOrRegister handles user login or registration based on phone number.
 func handleLogin(w http.ResponseWriter, r *http.Request) {
-	CORShandler.SetCORSHeaders(w)
+	var preflight bool = CORShandler.SetCORSHeaders(&w, r)
+	if preflight {
+		return
+	}
 
 	var req struct {
 		Phone   string `json:"phone"`
@@ -123,13 +126,15 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 	storedCode, exists := otpStore[req.Phone]
 	mutex.Unlock()
 
+	fmt.Println(exists)
 	if !exists || storedCode != req.SMScode {
 		http.Error(w, "Invalid OTP", http.StatusUnauthorized)
 		return
 	}
 
 	var senior Senior
-	query := `SELECT SeniorID, Phone_number FROM Senior WHERE Phone_number = ?`
+	senior.SeniorID = 1
+	/*query := `SELECT SeniorID, Phone_number FROM Senior WHERE Phone_number = ?`
 	err := db.QueryRow(query, req.Phone).Scan(&senior.SeniorID, &senior.Phone)
 
 	// If user doesn't exist, register automatically
@@ -150,7 +155,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 		}
 		senior.SeniorID = int(newID)
 		senior.Phone = req.Phone
-	}
+	}*/
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "senior_id",
@@ -161,6 +166,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 	})
 
 	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{
 		"message":   "Login successful",
 		"senior_id": fmt.Sprintf("%d", senior.SeniorID),
@@ -273,7 +279,15 @@ type Config struct {
 		Port     int    `json:"port"`
 		DBName   string `json:"dbname"`
 	} `json:"database"`
-	ServPort int `json:"server_port"`
+	APIToken struct {
+		Twilio struct {
+			FromNumber string `json:"fromNumber"`
+			AccountSID string `json:"accountSID"`
+			AuthToken  string `json:"authToken"`
+		} `json:"twilio"`
+	} `json:"api_tokens"`
+	DebugMode bool `json:"debugMode"`
+	ServPort  int  `json:"server_port"`
 }
 
 func GetConfig() Config {
@@ -287,6 +301,8 @@ func GetConfig() Config {
 		}{
 			Port: 5432,
 		},
+		DebugMode: true,
+		ServPort:  8080,
 	}
 
 	configFile, err := os.Open("./config.json")
@@ -300,20 +316,23 @@ func GetConfig() Config {
 }
 
 var db *sql.DB // global var
+var config Config
+
 func main() {
-	var errdb error
-	var config Config = GetConfig()
-	var connstring = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", config.Database.User, config.Database.Password, config.Database.Host, config.Database.Port, config.Database.DBName)
+	//var errdb error
+	config = GetConfig()
+	//var connstring = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", config.Database.User, config.Database.Password, config.Database.Host, config.Database.Port, config.Database.DBName)
 	// connection string
-	db, errdb = sql.Open("mysql", connstring) // make sql connection
+	/*db, errdb = sql.Open("mysql", connstring) // make sql connection
 	if errdb != nil {                         // if error with db
 		log.Fatal("Unable to connect to database, error: ", errdb) // print err
-	}
+	}*/
 	var port int = config.ServPort
 	var prefix string = "/api/v1/login"
 	router := mux.NewRouter()
-	router.HandleFunc(fmt.Sprintf("%s/ping", prefix), ping.PingHandler).Methods("GET")
-	router.HandleFunc(fmt.Sprintf("%s/sendsms", prefix), handleLogin).Methods("GET")
+	router.HandleFunc(fmt.Sprintf("%s/ping", prefix), ping.PingHandler).Methods("GET", "OPTIONS")
+	router.HandleFunc(fmt.Sprintf("%s/sendsms", prefix), handleSMS).Methods("POST", "OPTIONS")
+	router.HandleFunc(fmt.Sprintf("%s/login", prefix), handleLogin).Methods("POST", "OPTIONS")
 	router.Use(mainhandler.LogReq)
 	log.Println(fmt.Sprintf("Login Server running at port %d", port))
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), router))

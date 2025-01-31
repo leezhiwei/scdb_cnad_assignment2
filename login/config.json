@@ -1,9 +1,0 @@
-{
-    "database": {
-        "host": "localhost",
-        "password": "12345",
-         "user": "user",
-         "dbname": "cnad_sdcb"
-    },
- "server_port": 8080
-}
