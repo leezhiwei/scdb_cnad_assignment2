@@ -25,4 +25,4 @@ go.work.sum
 .env
 
 # prod config.json
-config.json
+**/config.json
