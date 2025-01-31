@@ -12,6 +12,7 @@ type Assessment struct {
 	Balance        int
 	Medication     bool
 	HistoryOfFalls bool
+	KneeInjury     bool
 }
 
 var result string
@@ -23,15 +24,14 @@ func main() {
 }
 
 func homePage(w http.ResponseWriter, r *http.Request) {
-	// HTML HERE TEMPORARILY
 	tmpl := `
 	<!DOCTYPE html>
 	<html>
 	<head>
-		<title>Fall Risk Self-Assessment</title>
+		<title>Elderly Fall Risk Assessment</title>
 	</head>
 	<body>
-		<h1>Fall Risk Self-Assessment</h1>
+		<h1>Elderly Fall Risk Assessment</h1>
 		<form action="/submit" method="POST">
 			<label>How would you rate your leg strength (1-5)?</label><br>
 			<input type="number" name="leg_strength" min="1" max="5" required><br><br>
@@ -47,6 +47,9 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 
 			<label>Have you had a fall in the last year? (1 for Yes, 0 for No)</label><br>
 			<input type="number" name="history_of_falls" min="0" max="1" required><br><br>
+
+			<label>Do you have a knee injury? (1 for Yes, 0 for No)</label><br>
+			<input type="number" name="knee_injury" min="0" max="1" required><br><br>
 
 			<input type="submit" value="Submit">
 		</form>
@@ -67,6 +70,7 @@ func submitAssessment(w http.ResponseWriter, r *http.Request) {
 		balance := r.FormValue("balance")
 		medication := r.FormValue("medication")
 		historyOfFalls := r.FormValue("history_of_falls")
+		kneeInjury := r.FormValue("knee_injury")
 
 		assessment := Assessment{
 			LegStrength:    parseToInt(legStrength),
@@ -74,6 +78,7 @@ func submitAssessment(w http.ResponseWriter, r *http.Request) {
 			Balance:        parseToInt(balance),
 			Medication:     medication == "1",
 			HistoryOfFalls: historyOfFalls == "1",
+			KneeInjury:     kneeInjury == "1",
 		}
 
 		result = calculateRisk(assessment)
@@ -90,18 +95,19 @@ func parseToInt(value string) int {
 func calculateRisk(assessment Assessment) string {
 	score := 0
 
-	// Add scores based on responses
-	score += (6 - assessment.LegStrength) // Lower strength = higher risk
-	score += (6 - assessment.Vision)      // Poor vision = higher risk
-	score += (6 - assessment.Balance)     // Poor balance = higher risk
+	score += (6 - assessment.LegStrength)
+	score += (6 - assessment.Vision)
+	score += (6 - assessment.Balance)
 	if assessment.Medication {
-		score += 1 // Taking medication = higher risk
+		score += 1
 	}
 	if assessment.HistoryOfFalls {
-		score += 2 // History of falls = higher risk
+		score += 2
+	}
+	if assessment.KneeInjury {
+		score += 2
 	}
 
-	// Determine risk level
 	if score <= 2 {
 		return "Low Risk"
 	} else if score <= 4 {
