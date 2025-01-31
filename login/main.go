@@ -313,6 +313,7 @@ func main() {
 	var prefix string = "/api/v1/login"
 	router := mux.NewRouter()
 	router.HandleFunc(fmt.Sprintf("%s/ping", prefix), ping.PingHandler).Methods("GET")
+	router.HandleFunc(fmt.Sprintf("%s/sendsms", prefix), handleLogin).Methods("GET")
 	router.Use(mainhandler.LogReq)
 	log.Println(fmt.Sprintf("Login Server running at port %d", port))
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), router))
