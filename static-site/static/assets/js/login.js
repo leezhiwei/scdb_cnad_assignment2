@@ -24,7 +24,7 @@ $("#send-sms").on("click", function () {
     }
 
     $.ajax({
-        url: "http://localhost:8080/send-sms",
+        url: "http://localhost:8080/api/v1/login/sendsms",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify({ phone: phone }),
@@ -32,7 +32,7 @@ $("#send-sms").on("click", function () {
             alert(response.message || "SMS sent successfully!");
         },
         error: function (xhr) {
-            alert("Error sending SMS: " + xhr.responseText);
+            alert("Error sending SMS: " + xhr.statusText);
         }
     });
 });
@@ -48,11 +48,19 @@ $("#login").on("click", function () {
     }
 
     $.ajax({
-        url: "http://localhost:8080/login",
+        url: "http://localhost:8080/api/v1/login/login",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify({ phone: phone, smscode: smsCode }),
-        success: function (response) {
+        success: function (resptext) {
+            try{
+                response = JSON.parse(resptext)
+            }
+            catch{
+                alert("Internal Server Error")
+                alert(`Error: ${resptext}`)
+                console.log(resptext)
+            }
             if (response.senior_id) {
                 alert("Login successful!");
                 document.cookie = `senior_id=${response.senior_id}; path=/`;

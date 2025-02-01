@@ -1,0 +1,17 @@
+{
+    "database": {
+        "host": "localhost",
+        "password": "12345",
+         "user": "user",
+         "dbname": "cnad_sdcb"
+    },
+    "api_tokens": {
+        "twilio":{
+            "fromNumber": "",
+            "accountSID": "",
+            "authToken": ""
+        }
+    },
+    "debugMode": true,
+    "server_port": 8080
+}
