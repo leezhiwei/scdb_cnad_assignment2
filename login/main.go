@@ -136,7 +136,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 	//senior.SeniorID = 1
 	query := `SELECT SeniorID, Phone_number FROM Senior WHERE Phone_number = ?`
 	err := db.QueryRow(query, req.Phone).Scan(&senior.SeniorID, &senior.Phone)
-	fmt.Println("Error plsss")
+	fmt.Println(err)
 	// If user doesn't exist, register automatically
 	if err == sql.ErrNoRows {
 		// Insert new user
@@ -300,7 +300,7 @@ func GetConfig() Config {
 			Port     int    `json:"port"`
 			DBName   string `json:"dbname"`
 		}{
-			Port: 5432,
+			Port: 3306,
 		},
 		DebugMode: true,
 		ServPort:  8080,
@@ -322,7 +322,7 @@ var config Config
 func main() {
 	var errdb error
 	config = GetConfig()
-	var connstring = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", config.Database.User, config.Database.Password, config.Database.Host, config.Database.Port, config.Database.DBName)
+	var connstring = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", config.Database.User, config.Database.Password, config.Database.Host, config.Database.Port, config.Database.DBName)
 	// connection string
 	db, errdb = sql.Open("mysql", connstring) // make sql connection
 	if errdb != nil {                         // if error with db
