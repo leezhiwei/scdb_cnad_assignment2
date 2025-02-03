@@ -136,11 +136,9 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 	//senior.SeniorID = 1
 	query := `SELECT SeniorID, Phone_number FROM Senior WHERE Phone_number = ?`
 	err := db.QueryRow(query, req.Phone).Scan(&senior.SeniorID, &senior.Phone)
-	fmt.Println(err)
 	// If user doesn't exist, register automatically
 	if err == sql.ErrNoRows {
 		// Insert new user
-		fmt.Println("Error pls")
 		insertQuery := `INSERT INTO Senior (Phone_number) VALUES (?)`
 		result, err := db.Exec(insertQuery, req.Phone)
 		if err != nil {
