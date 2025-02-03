@@ -133,13 +133,14 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var senior Senior
-	senior.SeniorID = 1
-	/*query := `SELECT SeniorID, Phone_number FROM Senior WHERE Phone_number = ?`
+	//senior.SeniorID = 1
+	query := `SELECT SeniorID, Phone_number FROM Senior WHERE Phone_number = ?`
 	err := db.QueryRow(query, req.Phone).Scan(&senior.SeniorID, &senior.Phone)
-
+	fmt.Println("Error plsss")
 	// If user doesn't exist, register automatically
 	if err == sql.ErrNoRows {
 		// Insert new user
+		fmt.Println("Error pls")
 		insertQuery := `INSERT INTO Senior (Phone_number) VALUES (?)`
 		result, err := db.Exec(insertQuery, req.Phone)
 		if err != nil {
@@ -155,7 +156,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 		}
 		senior.SeniorID = int(newID)
 		senior.Phone = req.Phone
-	}*/
+	}
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "senior_id",
@@ -319,14 +320,14 @@ var db *sql.DB // global var
 var config Config
 
 func main() {
-	//var errdb error
+	var errdb error
 	config = GetConfig()
-	//var connstring = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", config.Database.User, config.Database.Password, config.Database.Host, config.Database.Port, config.Database.DBName)
+	var connstring = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", config.Database.User, config.Database.Password, config.Database.Host, config.Database.Port, config.Database.DBName)
 	// connection string
-	/*db, errdb = sql.Open("mysql", connstring) // make sql connection
+	db, errdb = sql.Open("mysql", connstring) // make sql connection
 	if errdb != nil {                         // if error with db
 		log.Fatal("Unable to connect to database, error: ", errdb) // print err
-	}*/
+	}
 	var port int = config.ServPort
 	var prefix string = "/api/v1/login"
 	router := mux.NewRouter()
