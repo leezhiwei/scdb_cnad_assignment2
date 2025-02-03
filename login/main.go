@@ -51,7 +51,7 @@ func sendSMS(to string, code string) error {
 		Username: accountSid,
 		Password: authToken,
 	})
-
+	to = "+65 " + to // add SG prefix
 	// Create the message
 	params := &openapi.CreateMessageParams{}
 	params.SetTo(to)
