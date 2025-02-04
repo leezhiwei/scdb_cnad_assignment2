@@ -270,6 +270,107 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 // 	}
 // }
 
+// emergency contact struct
+type EmergencyContact struct {
+	EmergencyContactID int    `json:"emergencycontact_id"`
+	ContactName        int    `json:"contactname"`
+	ContactNumbert     string `json:"contactnumber"`
+	SeniorID           int    `json:"senior_id"`
+}
+
+// In-memory storage for emergency contacts
+var contacts = make(map[string]EmergencyContact)
+var mu sync.Mutex
+
+func AddEmergencyContact(w http.ResponseWriter, r *http.Request) {
+	var preflight bool = CORShandler.SetCORSHeaders(&w, r)
+	if preflight {
+		return
+	}
+
+	var req struct {
+		ContactName   string `json:"contactname"`
+		ContactNumber string `json:"contactnumber"`
+		SeniorID      int    `json:"senior_id"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	if req.ContactName == "" || req.ContactNumber == "" {
+		http.Error(w, "All fields are required", http.StatusBadRequest)
+		return
+	}
+
+	query := `INSERT INTO Emergency_Contact (ContactName, ContactNumber, SeniorID) VALUES (?, ?, ?)`
+	result, err := db.Exec(query, req.ContactName, req.ContactNumber, 3)
+	if err != nil {
+		http.Error(w, "Error inserting emergency contact", http.StatusInternalServerError)
+		fmt.Println(err)
+		return
+	}
+
+	newID, err := result.LastInsertId()
+	if err != nil {
+		http.Error(w, "Error retrieving inserted ID", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"message":             "Emergency contact added successfully",
+		"emergencycontact_id": newID,
+	})
+}
+
+func ListEmergencyContact(w http.ResponseWriter, r *http.Request) {
+	var preflight bool = CORShandler.SetCORSHeaders(&w, r)
+	if preflight {
+		return
+	}
+
+	// Retrieve the user's SeniorID from the request parameters or cookies
+	vars := mux.Vars(r)
+	seniorIDStr := vars["senior_id"]
+	if seniorIDStr == "" {
+		http.Error(w, "Senior ID is required", http.StatusBadRequest)
+		return
+	}
+
+	//	seniorID, err := strconv.Atoi(seniorIDStr)
+	//	if err != nil {
+	//		http.Error(w, "Invalid Senior ID", http.StatusBadRequest)
+	//		return
+	//	}
+
+	// Query the database for emergency contacts
+	query := `SELECT EmergencyContactID, ContactName, ContactNumber, SeniorID FROM Emergency_Contact WHERE SeniorID = ?`
+	rows, err := db.Query(query, 3) //seniorID
+	if err != nil {
+		http.Error(w, "Error retrieving emergency contacts", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	// Collect results
+	var contacts []EmergencyContact
+	for rows.Next() {
+		var contact EmergencyContact
+		if err := rows.Scan(&contact.EmergencyContactID, &contact.ContactName, &contact.ContactNumbert, &contact.SeniorID); err != nil {
+			http.Error(w, "Error scanning database results", http.StatusInternalServerError)
+			return
+		}
+		contacts = append(contacts, contact)
+	}
+
+	// Return the results as JSON
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "applqication/json")
+	json.NewEncoder(w).Encode(contacts)
+}
+
 type Config struct {
 	Database struct {
 		Host     string `json:"host"`
@@ -332,6 +433,8 @@ func main() {
 	router.HandleFunc(fmt.Sprintf("%s/ping", prefix), ping.PingHandler).Methods("GET", "OPTIONS")
 	router.HandleFunc(fmt.Sprintf("%s/sendsms", prefix), handleSMS).Methods("POST", "OPTIONS")
 	router.HandleFunc(fmt.Sprintf("%s/login", prefix), handleLogin).Methods("POST", "OPTIONS")
+	router.HandleFunc(fmt.Sprintf("%s/addemergencycontact", prefix), AddEmergencyContact).Methods("POST", "OPTIONS")
+	router.HandleFunc(fmt.Sprintf("%s/listemergencycontact", prefix), ListEmergencyContact).Methods("POST", "OPTIONS")
 	router.Use(mainhandler.LogReq)
 	log.Println(fmt.Sprintf("Login Server running at port %d", port))
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), router))
