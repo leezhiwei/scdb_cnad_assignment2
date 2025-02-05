@@ -66,7 +66,7 @@ $("#login").on("click", function () {
             }
             if (response.senior_id) {
                 alert("Login successful!");
-                document.cookie = `senior_id=${response.senior_id}; path=/`;
+                //document.cookie = `senior_id=${response.senior_id}; path=/`;
                 window.location.href = "index.html";
             } else {
                 alert("Invalid OTP or phone number.");
