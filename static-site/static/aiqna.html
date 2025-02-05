@@ -55,7 +55,7 @@
 							<p>Ask this AI with any questions you may have, and it will provide some helpful answers. However, please remember that the AI is not a doctor and cannot give medical advice. If feeling extremely uncomfortable or have serious concerns about your health, it is important to seek medical help from a healthcare professional right away.</p>
 							<section>
 								<b><p>Ask AI a question</p></b>
-								<form method="post" action="#">
+								<form id="questionForm">
 									<div class="fields">
 										<div class="field">
 											<textarea name="question" id="question" placeholder="Enter a question"></textarea>
@@ -65,6 +65,7 @@
 										<li><input type="submit" value="Confirm" class="primary" /></li>
 									</ul>
 								</form>
+								<p id="response"></p>
 							</section>
 						</div>
 						
@@ -114,6 +115,33 @@
 			</div>
 
 		<!-- Scripts -->
+			<script>
+				document.getElementById("questionForm").addEventListener("submit", function(event) {
+					event.preventDefault(); // Prevent default form submission
+				
+					let questionText = document.getElementById("question").value;
+					if (!questionText.trim()) {
+						alert("Please enter a question.");
+						return;
+					}
+				
+					fetch("http://localhost:5000/api/v1/medqna", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify({ question: questionText })
+					})
+					.then(response => response.json())
+					.then(data => {
+						document.getElementById("response").innerText = "AI Response: " + (data.answer || "No response received.");
+					})
+					.catch(error => {
+						console.error("Error:", error);
+						document.getElementById("response").innerText = "Error submitting question.";
+					});
+				});
+			</script>
 			<script src="assets/js/jquery.min.js"></script>
 			<script src="assets/js/browser.min.js"></script>
 			<script src="assets/js/breakpoints.min.js"></script>
