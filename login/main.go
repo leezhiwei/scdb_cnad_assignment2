@@ -388,6 +388,7 @@ func main() {
 	var port int = config.ServPort
 	var prefix string = "/api/v1/login"
 	CORShandler.DebugMode = config.DebugMode
+	CORShandler.Hostname = config.Hostname
 	router := mux.NewRouter()
 	router.HandleFunc(fmt.Sprintf("%s/ping", prefix), ping.PingHandler).Methods("GET", "OPTIONS")
 	router.HandleFunc(fmt.Sprintf("%s/sendsms", prefix), handleSMS).Methods("POST", "OPTIONS")
