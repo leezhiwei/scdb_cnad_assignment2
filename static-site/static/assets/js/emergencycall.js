@@ -1,7 +1,7 @@
     $("#AddNumber").on("click", function () {
         let contactName = $("#name").val().trim();
         let contactNumber = $("#phone").val().trim();
-        let seniorId = document.cookie = "senior_id";
+        let seniorId = getCookie("senior_id");
 
         if (!contactName || !contactNumber) {
             alert("Please enter both name and phone number.");
