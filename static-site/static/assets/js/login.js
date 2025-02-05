@@ -51,6 +51,9 @@ $("#login").on("click", function () {
         url: "http://localhost:8080/api/v1/login/login",
         type: "POST",
         contentType: "application/json",
+        xhrFields: {
+         withCredentials: true
+        },
         data: JSON.stringify({ phone: phone, smscode: smsCode }),
         success: function (resptext) {
             try{
@@ -63,7 +66,7 @@ $("#login").on("click", function () {
             }
             if (response.senior_id) {
                 alert("Login successful!");
-                document.cookie = `senior_id=${response.senior_id}; path=/`;
+                //document.cookie = `senior_id=${response.senior_id}; path=/`;
                 window.location.href = "index.html";
             } else {
                 alert("Invalid OTP or phone number.");

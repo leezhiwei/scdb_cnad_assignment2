@@ -26,3 +26,6 @@ go.work.sum
 
 # prod config.json
 **/config.json
+
+# MYVIMDIR
+**/$MYVIMDIR
