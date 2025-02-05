@@ -274,7 +274,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 // emergency contact struct
 type EmergencyContact struct {
 	EmergencyContactID int    `json:"emergencycontact_id"`
-	ContactName        int    `json:"contactname"`
+	ContactName        string `json:"contactname"`
 	ContactNumbert     string `json:"contactnumber"`
 	SeniorID           int    `json:"senior_id"`
 }
