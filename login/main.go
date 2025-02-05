@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"database/sql"
 	"encoding/json"
@@ -339,15 +340,15 @@ func ListEmergencyContact(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//	seniorID, err := strconv.Atoi(seniorIDStr)
-	//	if err != nil {
-	//		http.Error(w, "Invalid Senior ID", http.StatusBadRequest)
-	//		return
-	//	}
+	seniorID, err := strconv.Atoi(seniorIDStr)
+	if err != nil {
+		http.Error(w, "Invalid Senior ID", http.StatusBadRequest)
+		return
+	}
 
-	// Query the database for emergency contacts
+	//Query the database for emergency contacts
 	query := `SELECT EmergencyContactID, ContactName, ContactNumber, SeniorID FROM Emergency_Contact WHERE SeniorID = ?`
-	rows, err := db.Query(query, 3) //seniorID
+	rows, err := db.Query(query, seniorID)
 	if err != nil {
 		http.Error(w, "Error retrieving emergency contacts", http.StatusInternalServerError)
 		return
