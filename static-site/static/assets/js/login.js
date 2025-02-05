@@ -51,6 +51,9 @@ $("#login").on("click", function () {
         url: "http://localhost:8080/api/v1/login/login",
         type: "POST",
         contentType: "application/json",
+        xhrFields: {
+         withCredentials: true
+        },
         data: JSON.stringify({ phone: phone, smscode: smsCode }),
         success: function (resptext) {
             try{
