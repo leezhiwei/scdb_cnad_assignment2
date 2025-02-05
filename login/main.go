@@ -207,9 +207,6 @@ func AddEmergencyContact(w http.ResponseWriter, r *http.Request) {
 	}
 
 	seniorID := req.SeniorID
-	fmt.Println(seniorID)
-	fmt.Println(req.SeniorID)
-	fmt.Println("aaaaa")
 	query := `INSERT INTO Emergency_Contact (ContactName, ContactNumber, SeniorID) VALUES (?, ?, ?)`
 	result, err := db.Exec(query, req.ContactName, req.ContactNumber, seniorID)
 	if err != nil {

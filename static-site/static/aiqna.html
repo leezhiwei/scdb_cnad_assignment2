@@ -125,7 +125,7 @@
 						return;
 					}
 				
-					fetch("http://localhost:5000/api/v1/medqna", {
+					fetch("http://localhost:5000/api/v1/medqna/chat", {
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json"
@@ -134,7 +134,7 @@
 					})
 					.then(response => response.json())
 					.then(data => {
-						document.getElementById("response").innerText = "AI Response: " + (data.answer || "No response received.");
+						document.getElementById("response").innerText = "Med42 Llama3 Response: " + (data.answer || "No response received.");
 					})
 					.catch(error => {
 						console.error("Error:", error);
