@@ -387,6 +387,7 @@ type Config struct {
 			AuthToken  string `json:"authToken"`
 		} `json:"twilio"`
 	} `json:"api_tokens"`
+	Hostname string `json:"hostname"`
 	DebugMode bool `json:"debugMode"`
 	ServPort  int  `json:"server_port"`
 }
@@ -402,6 +403,7 @@ func GetConfig() Config {
 		}{
 			Port: 3306,
 		},
+		Hostname: "localhost",
 		DebugMode: true,
 		ServPort:  8080,
 	}
@@ -430,6 +432,7 @@ func main() {
 	}
 	var port int = config.ServPort
 	var prefix string = "/api/v1/login"
+	CORShandler.DebugMode = config.DebugMode
 	router := mux.NewRouter()
 	router.HandleFunc(fmt.Sprintf("%s/ping", prefix), ping.PingHandler).Methods("GET", "OPTIONS")
 	router.HandleFunc(fmt.Sprintf("%s/sendsms", prefix), handleSMS).Methods("POST", "OPTIONS")
