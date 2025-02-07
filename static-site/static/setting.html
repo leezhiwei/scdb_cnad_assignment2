@@ -1,19 +1,30 @@
 <!DOCTYPE HTML>
-<!--
-	Phantom by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
 <html>
 	<head>
-		<title>SDCB - Login</title>
+		<title>Settings</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
-        <link rel="stylesheet" href="assets/css/login.css" />
 		<link rel="stylesheet" href="assets/css/setting.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 	</head>
+
+	<style>
+		body {
+			font-size: 16px;
+		}
+		.container {
+			max-width: 600px;
+			margin: 50px auto;
+			text-align: center;
+		}
+		button {
+			font-size: 16px;
+			margin: 5px;
+			padding: 10px;
+		}
+		
+	</style>
 	<body class="is-preload">
 		<!-- Wrapper -->
 			<div id="wrapper">
@@ -24,7 +35,7 @@
 
 							<!-- Logo -->
 								<a href="index.html" class="logo">
-									<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">Senior's Doctor Care Befrienders</span>
+									<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">Phantom</span>
 								</a>
 
 							<!-- Nav -->
@@ -48,28 +59,12 @@
 							<li><a href="elements.html">Elements</a></li>
 						</ul>
 					</nav>
-
-				<!-- Main -->
-                <div class="login-container" id="main">
-                    <h2 class="login-header">Welcome to SDCB!<br/> Please Log In</h2>
-                    <form>
-                        <div class="form-group">
-                            <label for="phone">Phone Number</label>
-                            <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="sms-code">SMS Code</label> 
-                            <input type="text" id="sms-code" name="sms-code" placeholder="Enter the code sent to your phone" required>
-                        </div>
-                        <div class="remember-me">
-                            <input type="checkbox" id="remember-me" name="remember-me">
-                            <label for="remember-me">Remember Me</label>
-                        </div>
-  
-						<button id="send-sms" class="login-button" type="button">Send SMS</button>
-						<button id="login" class="login-button" type="button">Log In</button>
-                    </form>
-                </div>
+					<div class="setting-item" style="text-align: center;">
+						<label for="fontSize"><h2>Font-Szie：</h2></label>
+						<input type="range" id="fontSize" min="20" max="48" step="2" value="16">
+						<span id="fontSizeValue">16px</span>
+					</div>
+					</body>
 
 				<!-- Footer -->
 					<footer id="footer">
@@ -118,9 +113,30 @@
 			<script src="assets/js/jquery.min.js"></script>
 			<script src="assets/js/browser.min.js"></script>
 			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/setting.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
-			<script src="assets/js/login.js"></script>
-			<script src="assets/js/setting.js"></script>
+			<script>
+				// get the element
+				const fontSizeSlider = document.getElementById('fontSize');
+				const fontSizeValue = document.getElementById('fontSizeValue');
+		
+				// save it to local
+				const savedSize = localStorage.getItem('fontSize');
+				if (savedSize) {
+					fontSizeSlider.value = savedSize;
+					fontSizeValue.textContent = `${savedSize}px`;
+				}
+		
+				fontSizeSlider.addEventListener('input', (e) => {
+					const newSize = e.target.value;
+					
+					fontSizeValue.textContent = `${newSize}px`;
+					
+					localStorage.setItem('fontSize', newSize);
+					
+					document.documentElement.style.fontSize = `${newSize}px`;
+				});
+		    </script>
 	</body>
 </html>
