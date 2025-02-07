@@ -23,7 +23,40 @@
 			margin: 5px;
 			padding: 10px;
 		}
-		
+		input[type="range"] {
+            -webkit-appearance: none;
+            width: 60%; /* Make it longer */
+            height: 12px;
+            background: #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        /* Track */
+        input[type="range"]::-webkit-slider-runnable-track {
+            background: #4CAF50;
+            height: 12px;
+            border-radius: 6px;
+        }
+
+        /* Thumb (Handle) */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border: 2px solid #4CAF50;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-top: -6px; /* Align with the track */
+        }
+
+        /* Hover effect */
+        input[type="range"]:hover::-webkit-slider-thumb {
+            background: #4CAF50;
+            border: 2px solid #388E3C;
+        }
 	</style>
 	<body class="is-preload">
 		<!-- Wrapper -->
@@ -34,9 +67,9 @@
 						<div class="inner">
 
 							<!-- Logo -->
-								<a href="index.html" class="logo">
-									<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">Phantom</span>
-								</a>
+							<a href="index.html" class="logo">
+								<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">Senior's Doctor Care Befrienders</span>
+							</a>
 
 							<!-- Nav -->
 								<nav>
@@ -53,17 +86,18 @@
 						<h2>Menu</h2>
 						<ul>
 							<li><a href="index.html">Home</a></li>
-							<li><a href="generic.html">Ipsum veroeros</a></li>
-							<li><a href="generic.html">Tempus etiam</a></li>
-							<li><a href="generic.html">Consequat dolor</a></li>
-							<li><a href="elements.html">Elements</a></li>
+							<li><a href="generic.html">My Profile</a></li>
+							<li><a href="emergencycontact.html">Call Doctor</a></li>
+							<li><a href="setting.html">Setting</a></li>
+							<li><a href="elements.html">Logout</a></li>
 						</ul>
 					</nav>
 					<div class="setting-item" style="text-align: center;">
 						<label for="fontSize"><h2>Font-Szie：</h2></label>
-						<input type="range" id="fontSize" min="20" max="48" step="2" value="16">
-						<span id="fontSizeValue">16px</span>
+						<input type="range" id="fontSize" min="20" max="48" step="2" value="48">
+						<span id="fontSizeValue">20px</span>
 					</div>
+					<div style="padding-top: 8% ;"></div>
 					</body>
 
 				<!-- Footer -->
