@@ -467,6 +467,8 @@ func main() {
 	router.HandleFunc(fmt.Sprintf("%s/addemergencycontact", prefix), AddEmergencyContact).Methods("POST", "OPTIONS")
 	router.HandleFunc(fmt.Sprintf("%s/listemergencycontact", prefix), ListEmergencyContact).Methods("POST", "OPTIONS")
 	router.HandleFunc(fmt.Sprintf("%s/deleteemergencycontact", prefix), DeleteEmergencyContact).Methods("POST", "OPTIONS")
+	router.HandleFunc(fmt.Sprintf("%s/getsenior", prefix), getSenior).Methods("POST", "OPTIONS")
+	router.HandleFunc(fmt.Sprintf("%s/updatesenior", prefix), updateSenior).Methods("POST", "OPTIONS")
 	router.Use(mainhandler.LogReq)
 	log.Println(fmt.Sprintf("Login Server running at port %d", port))
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), router))
