@@ -172,6 +172,51 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func getSenior(w http.ResponseWriter, r *http.Request) {
+	var preflight bool = CORShandler.SetCORSHeaders(&w, r)
+	if preflight {
+		return
+	}
+	var req struct {
+		SeniorID int `json:"senior_id"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	var seniordata Senior
+
+	seniordata.SeniorID = req.SeniorID
+
+	query := `SELECT Phone_number, Name FROM Senior WHERE SeniorID = ?`
+	err := db.QueryRow(query, req.SeniorID).Scan(&seniordata.Phone, &seniordata.Name)
+	// unable to find senior
+	if err == sql.ErrNoRows {
+		log.Println("Unable to find SeniorID in database.")
+		w.WriteHeader(http.StatusNotFound)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{
+			"message": "Unable to find Senior",
+		})
+		return
+	}
+	// can find
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(seniordata)
+	return
+}
+
+func updateSenior(w http.ResponseWriter, r *http.Request) {
+	var preflight bool = CORShandler.SetCORSHeaders(&w, r)
+	if preflight {
+		return
+	}
+
+}
+
 // // updateUserProfile allows users to update their personal details.
 // func updateUserProfile(w http.ResponseWriter, r *http.Request) {
 // 	CORShandler.SetCORSHeaders(w)
