@@ -8,8 +8,10 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/pion/rtcp"
 	"github.com/pion/webrtc/v2"
@@ -24,6 +26,75 @@ type Sdp struct {
 	Sdp string
 }
 
+type Meeting struct {
+	mu      sync.Mutex
+	userID  string
+	peerID  string // Store the other user's ID
+	waiting bool   // Flag to indicate if we're waiting for a peer
+}
+
+var meetings = make(map[string]*Meeting)
+
+func joinMeeting(c *gin.Context) {
+	meetingID := c.Param("meetingID")
+	userID := c.Param("userID")
+
+	meeting, loaded := meetings[meetingID]
+
+	if !loaded {
+		// First user to join the meeting
+		meeting = &Meeting{userID: userID}
+		meetings[meetingID] = meeting
+		c.JSON(http.StatusOK, gin.H{"message": "Joined meeting", "peerID": ""}) // No peer yet
+		return
+	}
+
+	meeting.mu.Lock()
+	defer meeting.mu.Unlock()
+
+	if meeting.userID == userID {
+		// Same user rejoined (or refreshed)
+		if meeting.peerID != "" {
+			c.JSON(http.StatusOK, gin.H{"message": "Rejoined meeting", "peerID": meeting.peerID})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"message": "Rejoined meeting", "peerID": ""})
+		}
+		return
+	}
+
+	if meeting.peerID == "" {
+		// Second user joined, set the peer ID
+		meeting.peerID = userID
+		c.JSON(http.StatusOK, gin.H{"message": "Joined meeting", "peerID": meeting.userID}) // Send the first user's ID
+	} else {
+		// More than two users, or the peer is already set.  Handle as you see fit.
+		c.JSON(http.StatusConflict, gin.H{"error": "Meeting already full or peer already assigned"})
+	}
+}
+
+func getPeerID(c *gin.Context) {
+	meetingID := c.Param("meetingID")
+	userID := c.Param("userID")
+
+	meeting, loaded := meetings[meetingID]
+	if !loaded {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Meeting not found"})
+		return
+	}
+
+	meeting.mu.Lock()
+	defer meeting.mu.Unlock()
+
+	if meeting.userID == userID {
+		c.JSON(http.StatusOK, gin.H{"peerID": meeting.peerID})
+	} else if meeting.peerID == userID {
+		c.JSON(http.StatusOK, gin.H{"peerID": meeting.userID})
+	} else {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not in meeting"})
+	}
+
+}
+
 func main() {
 	file, err := os.OpenFile("info.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
@@ -32,6 +103,7 @@ func main() {
 	defer file.Close()
 	log.SetOutput(file)
 	router := gin.Default()
+	router.Use(cors.Default())
 
 	// sender to channel of track
 	peerConnectionMap := make(map[string]chan *webrtc.Track)
@@ -53,6 +125,7 @@ func main() {
 	}
 
 	router.POST("/webrtc/sdp/m/:meetingId/c/:userID/p/:peerId/s/:isSender", func(c *gin.Context) {
+		clear(meetings)
 		isSender, _ := strconv.ParseBool(c.Param("isSender"))
 		userID := c.Param("userID")
 		peerID := c.Param("peerId")
@@ -93,8 +166,9 @@ func main() {
 		}
 		c.JSON(http.StatusOK, Sdp{Sdp: Signal.Encode(answer)})
 	})
-
-	router.Run(":8080")
+	router.POST("/join/:meetingID/:userID", joinMeeting)
+	router.GET("/peer/:meetingID/:userID", getPeerID)
+	router.RunTLS(":8080", "server.cert", "server.key")
 }
 
 // user is the caller of the method
