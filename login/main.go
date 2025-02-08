@@ -172,51 +172,6 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func getSenior(w http.ResponseWriter, r *http.Request) {
-	var preflight bool = CORShandler.SetCORSHeaders(&w, r)
-	if preflight {
-		return
-	}
-	var req struct {
-		SeniorID int `json:"senior_id"`
-	}
-
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request", http.StatusBadRequest)
-		return
-	}
-
-	var seniordata Senior
-
-	seniordata.SeniorID = req.SeniorID
-
-	query := `SELECT Phone_number, Name FROM Senior WHERE SeniorID = ?`
-	err := db.QueryRow(query, req.SeniorID).Scan(&seniordata.Phone, &seniordata.Name)
-	// unable to find senior
-	if err == sql.ErrNoRows {
-		log.Println("Unable to find SeniorID in database.")
-		w.WriteHeader(http.StatusNotFound)
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{
-			"message": "Unable to find Senior",
-		})
-		return
-	}
-	// can find
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(seniordata)
-	return
-}
-
-func updateSenior(w http.ResponseWriter, r *http.Request) {
-	var preflight bool = CORShandler.SetCORSHeaders(&w, r)
-	if preflight {
-		return
-	}
-
-}
-
 // emergency contact struct
 type EmergencyContact struct {
 	Contactid      int    `json:"contact_id"`
@@ -367,6 +322,80 @@ func DeleteEmergencyContact(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"message": "Emergency contact deleted successfully"})
 
+}
+
+func getSenior(w http.ResponseWriter, r *http.Request) {
+	var preflight bool = CORShandler.SetCORSHeaders(&w, r)
+	if preflight {
+		return
+	}
+	var req struct {
+		SeniorID int `json:"senior_id"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	var seniordata Senior
+
+	seniordata.SeniorID = req.SeniorID
+
+	query := `SELECT Phone_number, Name FROM Senior WHERE SeniorID = ?`
+	err := db.QueryRow(query, req.SeniorID).Scan(&seniordata.Phone, &seniordata.Name)
+	// unable to find senior
+	if err == sql.ErrNoRows {
+		log.Println("Unable to find SeniorID in database.")
+		w.WriteHeader(http.StatusNotFound)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{
+			"message": "Unable to find Senior",
+		})
+		return
+	}
+	// can find
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(seniordata)
+	return
+}
+
+func updateSenior(w http.ResponseWriter, r *http.Request) {
+	var err error
+	var preflight bool = CORShandler.SetCORSHeaders(&w, r)
+	if preflight {
+		return
+	}
+
+	var seniordata Senior
+	if err := json.NewDecoder(r.Body).Decode(&seniordata); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	if seniordata.Name == "" {
+		http.Error(w, "Please update your name.", http.StatusBadRequest)
+		return
+	}
+
+	query := `
+        UPDATE Senior
+        SET Phone_number = COALESCE(NULLIF(?, ''), Phone_number),
+            Name = COALESCE(NULLIF(?, ''), Name),
+            UpdatedAt = NOW()
+        WHERE SeniorID = ?
+    `
+	_, err = db.Exec(query, seniordata.Phone, seniordata.Name, seniordata.SeniorID) // run
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Error updating Senior profile") // if err, error
+		return
+	}
+
+	w.WriteHeader(http.StatusOK) // else success
+	fmt.Fprintf(w, "Senior updated successfully")
+	return
 }
 
 type Config struct {
