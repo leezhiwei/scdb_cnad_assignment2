@@ -1,17 +1,63 @@
 <!DOCTYPE HTML>
-<!--
-	Phantom by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
 <html>
 	<head>
-		<title>SCDB - AI QnA</title>
+		<title>Settings</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="assets/css/setting.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 	</head>
+
+	<style>
+		body {
+			font-size: 16px;
+		}
+		.container {
+			max-width: 600px;
+			margin: 50px auto;
+			text-align: center;
+		}
+		button {
+			font-size: 16px;
+			margin: 5px;
+			padding: 10px;
+		}
+		input[type="range"] {
+            -webkit-appearance: none;
+            width: 60%; /* Make it longer */
+            height: 12px;
+            background: #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        /* Track */
+        input[type="range"]::-webkit-slider-runnable-track {
+            background: #4CAF50;
+            height: 12px;
+            border-radius: 6px;
+        }
+
+        /* Thumb (Handle) */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border: 2px solid #4CAF50;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-top: -6px; /* Align with the track */
+        }
+
+        /* Hover effect */
+        input[type="range"]:hover::-webkit-slider-thumb {
+            background: #4CAF50;
+            border: 2px solid #388E3C;
+        }
+	</style>
 	<body class="is-preload">
 		<!-- Wrapper -->
 			<div id="wrapper">
@@ -21,9 +67,9 @@
 						<div class="inner">
 
 							<!-- Logo -->
-								<a href="index.html" class="logo">
-									<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">Phantom</span>
-								</a>
+							<a href="index.html" class="logo">
+								<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">Senior's Doctor Care Befrienders</span>
+							</a>
 
 							<!-- Nav -->
 								<nav>
@@ -40,36 +86,19 @@
 						<h2>Menu</h2>
 						<ul>
 							<li><a href="index.html">Home</a></li>
-							<li><a href="generic.html">Ipsum veroeros</a></li>
-							<li><a href="generic.html">Tempus etiam</a></li>
-							<li><a href="generic.html">Consequat dolor</a></li>
-							<li><a href="elements.html">Elements</a></li>
+							<li><a href="generic.html">My Profile</a></li>
+							<li><a href="emergencycontact.html">Call Doctor</a></li>
+							<li><a href="setting.html">Setting</a></li>
+							<li><a href="elements.html">Logout</a></li>
 						</ul>
 					</nav>
-
-				<!-- Main -->
-					<div id="main">
-						<div class="inner">
-							<h1>AI Questions & Answers</h1>
-							<span class="image main"><img src="images/pic13.jpg" alt="" /></span>
-							<p>Ask this AI with any questions you may have, and it will provide some helpful answers. However, please remember that the AI is not a doctor and cannot give medical advice. If feeling extremely uncomfortable or have serious concerns about your health, it is important to seek medical help from a healthcare professional right away.</p>
-							<section>
-								<b><p>Ask AI a question</p></b>
-								<form id="questionForm">
-									<div class="fields">
-										<div class="field">
-											<textarea name="question" id="question" placeholder="Enter a question"></textarea>
-										</div>
-									</div>
-									<ul class="actions">
-										<li><input type="submit" value="Confirm" class="primary" /></li>
-									</ul>
-								</form>
-								<p id="response"></p>
-							</section>
-						</div>
-						
+					<div class="setting-item" style="text-align: center;">
+						<label for="fontSize"><h2>Font-Szie：</h2></label>
+						<input type="range" id="fontSize" min="20" max="48" step="2" value="48">
+						<span id="fontSizeValue">20px</span>
 					</div>
+					<div style="padding-top: 8% ;"></div>
+					</body>
 
 				<!-- Footer -->
 					<footer id="footer">
@@ -115,38 +144,33 @@
 			</div>
 
 		<!-- Scripts -->
-			<script>
-				document.getElementById("questionForm").addEventListener("submit", function(event) {
-					event.preventDefault(); // Prevent default form submission
-				
-					let questionText = document.getElementById("question").value;
-					if (!questionText.trim()) {
-						alert("Please enter a question.");
-						return;
-					}
-				
-					fetch("http://localhost:5000/api/v1/medqna/chat", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json"
-						},
-						body: JSON.stringify({ question: questionText })
-					})
-					.then(response => response.json())
-					.then(data => {
-						document.getElementById("response").innerText = "Med42 Llama3 Response: " + (data.answer || "No response received.");
-					})
-					.catch(error => {
-						console.error("Error:", error);
-						document.getElementById("response").innerText = "Error submitting question.";
-					});
-				});
-			</script>
 			<script src="assets/js/jquery.min.js"></script>
 			<script src="assets/js/browser.min.js"></script>
 			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/setting.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
-
+			<script>
+				// get the element
+				const fontSizeSlider = document.getElementById('fontSize');
+				const fontSizeValue = document.getElementById('fontSizeValue');
+		
+				// save it to local
+				const savedSize = localStorage.getItem('fontSize');
+				if (savedSize) {
+					fontSizeSlider.value = savedSize;
+					fontSizeValue.textContent = `${savedSize}px`;
+				}
+		
+				fontSizeSlider.addEventListener('input', (e) => {
+					const newSize = e.target.value;
+					
+					fontSizeValue.textContent = `${newSize}px`;
+					
+					localStorage.setItem('fontSize', newSize);
+					
+					document.documentElement.style.fontSize = `${newSize}px`;
+				});
+		    </script>
 	</body>
 </html>

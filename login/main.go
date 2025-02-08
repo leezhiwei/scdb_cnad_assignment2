@@ -217,103 +217,157 @@ func updateSenior(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// // updateUserProfile allows users to update their personal details.
-// func updateUserProfile(w http.ResponseWriter, r *http.Request) {
-// 	CORShandler.SetCORSHeaders(w)
+// emergency contact struct
+type EmergencyContact struct {
+	Contactid      int    `json:"contact_id"`
+	ContactName    string `json:"contactname"`
+	ContactNumbert string `json:"contactnumber"`
+	SeniorID       int    `json:"senior_id"`
+}
 
-// 	var err error
+// In-memory storage for emergency contacts
+var contacts = make(map[string]EmergencyContact)
+var mu sync.Mutex
 
-// 	// Retrieve the user's ID from cookies
-// 	SeniorIDCookie, err := r.Cookie("senior_id")
-// 	if err != nil {
-// 		w.WriteHeader(http.StatusUnauthorized)
-// 		fmt.Fprintf(w, "Unauthorized: Please log in")
-// 		return
-// 	}
-// 	//store user id
-// 	SeniorID := SeniorIDCookie.Value
-// 	SeniorIDInt, err := strconv.Atoi(SeniorID)
-// 	if err != nil {
-// 		w.WriteHeader(http.StatusBadRequest)
-// 		fmt.Fprintf(w, "Invalid user ID")
-// 		return
-// 	}
+func AddEmergencyContact(w http.ResponseWriter, r *http.Request) {
+	var preflight bool = CORShandler.SetCORSHeaders(&w, r)
+	if preflight {
+		return
+	}
 
-// 	// Parse JSON request body
-// 	var reqData struct {
-// 		Email string `json:"email"`
-// 		Phone string `json:"phone"`
-// 	}
+	var req struct {
+		ContactName   string `json:"contactname"`
+		ContactNumber string `json:"contactnumber"`
+		SeniorID      int    `json:"senior_id"`
+	}
 
-// 	err = json.NewDecoder(r.Body).Decode(&reqData)
-// 	if err != nil {
-// 		w.WriteHeader(http.StatusBadRequest)
-// 		fmt.Fprintf(w, "Invalid JSON data")
-// 		return
-// 	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
 
-// 	// Validate inputs
-// 	if reqData.Email == "" && reqData.Phone == "" {
-// 		w.WriteHeader(http.StatusBadRequest)
-// 		fmt.Fprintf(w, "At least one field (email or phone) must be provided")
-// 		return
-// 	}
+	if req.ContactName == "" || req.ContactNumber == "" {
+		http.Error(w, "All fields are required", http.StatusBadRequest)
+		return
+	}
 
-// 	// Update the user's profile in the database for user email and phone
-// 	query := `
-//         UPDATE users
-//         SET Email = COALESCE(NULLIF(?, ''), Email),
-//             Phone = COALESCE(NULLIF(?, ''), Phone),
-//             UpdatedAt = NOW()
-//         WHERE UserID = ?
-//     `
-// 	_, err = db.Exec(query, reqData.Email, reqData.Phone, SeniorID)
-// 	if err != nil {
-// 		w.WriteHeader(http.StatusInternalServerError)
-// 		fmt.Fprintf(w, "Error updating user profile")
-// 		return
-// 	}
+	seniorID := req.SeniorID
+	query := `INSERT INTO Emergency_Contact (ContactName, ContactNumber, SeniorID) VALUES (?, ?, ?)`
+	result, err := db.Exec(query, req.ContactName, req.ContactNumber, seniorID)
+	if err != nil {
+		http.Error(w, "Error inserting emergency contact", http.StatusInternalServerError)
+		fmt.Println(err)
+		return
+	}
 
-// 	w.WriteHeader(http.StatusOK)
-// 	fmt.Fprintf(w, "Profile updated successfully")
-// }
+	newID, err := result.LastInsertId()
+	if err != nil {
+		http.Error(w, "Error retrieving inserted ID", http.StatusInternalServerError)
+		return
+	}
 
-// // viewUserProfile allows users to view their membership status and rental history.
-// func viewUserProfile(w http.ResponseWriter, r *http.Request) {
-// 	CORShandler.SetCORSHeaders(w)
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"message":             "Emergency contact added successfully",
+		"emergencycontact_id": newID,
+	})
+}
 
-// 	var err error
-// 	// Retrieve the user's ID from cookies, not allow access if there is no cookies
-// 	SeniorIDCookie, err := r.Cookie("senior_id")
-// 	if err != nil {
-// 		w.WriteHeader(http.StatusUnauthorized)
-// 		fmt.Fprintf(w, "Unauthorized: Please log in")
-// 		return
-// 	}
-// 	//store user id
-// 	SeniorID := SeniorIDCookie.Value
-// 	SeniorIDInt, err := strconv.Atoi(SeniorID)
-// 	if err != nil {
-// 		w.WriteHeader(http.StatusBadRequest)
-// 		fmt.Fprintf(w, "Invalid user ID")
-// 		return
-// 	}
+func ListEmergencyContact(w http.ResponseWriter, r *http.Request) {
+	var preflight bool = CORShandler.SetCORSHeaders(&w, r)
+	if preflight {
+		return
+	}
 
-// 	// Query user details
-// 	var senior Senior
-// 	query := `
-//         SELECT Email, Phone, MembershipTierID, MembershipPoint, CreatedAt, UpdatedAt
-//         FROM users
-//         WHERE UserID = ?
-//     `
-// 	err = db.QueryRow(query, seniorID).Scan(&user.Email, &user.Phone, &user.MembershipTierID, &user.MembershipPoint, &user.CreatedAt, &user.UpdatedAt)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 		w.WriteHeader(http.StatusInternalServerError)
-// 		fmt.Fprintf(w, "Error retrieving user profile")
-// 		return
-// 	}
-// }
+	var req struct {
+		SeniorID int `json:"senior_id"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	if req.SeniorID == 0 {
+		http.Error(w, "Senior ID is required", http.StatusBadRequest)
+		return
+	}
+
+	seniorID := req.SeniorID
+
+	//Query the database for emergency contacts
+	query := `SELECT Contactid, ContactName, ContactNumber, SeniorID FROM Emergency_Contact WHERE SeniorID = ?`
+	rows, err := db.Query(query, seniorID)
+	fmt.Println(seniorID)
+	if err != nil {
+		http.Error(w, "Error retrieving emergency contacts", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	// Collect results
+	var contacts []EmergencyContact
+	for rows.Next() {
+		var contact EmergencyContact
+		if err := rows.Scan(&contact.Contactid, &contact.ContactName, &contact.ContactNumbert, &contact.SeniorID); err != nil {
+			http.Error(w, "Error scanning database results", http.StatusInternalServerError)
+			return
+		}
+		contacts = append(contacts, contact)
+	}
+	fmt.Println("Contacts found:", contacts)
+	// Return the results as JSON
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "applqication/json")
+	json.NewEncoder(w).Encode(contacts)
+}
+
+func DeleteEmergencyContact(w http.ResponseWriter, r *http.Request) {
+	var preflight bool = CORShandler.SetCORSHeaders(&w, r)
+	if preflight {
+		return
+	}
+
+	var req struct {
+		ContactID int `json:"contact_id"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	if req.ContactID == 0 {
+		http.Error(w, "Contact ID is required", http.StatusBadRequest)
+		return
+	}
+
+	query := `DELETE FROM Emergency_Contact WHERE Contactid = ?`
+	result, err := db.Exec(query, req.ContactID)
+	if err != nil {
+		log.Println("Error executing DELETE query:", err)
+		http.Error(w, "Error deleting emergency contact", http.StatusInternalServerError)
+		return
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Println("Error retrieving affected rows:", err)
+		http.Error(w, "Error retrieving affected rows", http.StatusInternalServerError)
+		return
+	}
+
+	if rowsAffected == 0 {
+		log.Println("No contact found with the given ID:", req.ContactID)
+		http.Error(w, "No contact found with the given ID", http.StatusNotFound)
+		return
+	}
+
+	log.Println("Successfully deleted contact:", req.ContactID)
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Emergency contact deleted successfully"})
+
+}
 
 type Config struct {
 	Database struct {
@@ -330,8 +384,9 @@ type Config struct {
 			AuthToken  string `json:"authToken"`
 		} `json:"twilio"`
 	} `json:"api_tokens"`
-	DebugMode bool `json:"debugMode"`
-	ServPort  int  `json:"server_port"`
+	Hostname  string `json:"hostname"`
+	DebugMode bool   `json:"debugMode"`
+	ServPort  int    `json:"server_port"`
 }
 
 func GetConfig() Config {
@@ -345,6 +400,7 @@ func GetConfig() Config {
 		}{
 			Port: 3306,
 		},
+		Hostname:  "localhost",
 		DebugMode: true,
 		ServPort:  8080,
 	}
@@ -373,10 +429,15 @@ func main() {
 	}
 	var port int = config.ServPort
 	var prefix string = "/api/v1/login"
+	CORShandler.DebugMode = config.DebugMode
+	CORShandler.Hostname = config.Hostname
 	router := mux.NewRouter()
 	router.HandleFunc(fmt.Sprintf("%s/ping", prefix), ping.PingHandler).Methods("GET", "OPTIONS")
 	router.HandleFunc(fmt.Sprintf("%s/sendsms", prefix), handleSMS).Methods("POST", "OPTIONS")
 	router.HandleFunc(fmt.Sprintf("%s/login", prefix), handleLogin).Methods("POST", "OPTIONS")
+	router.HandleFunc(fmt.Sprintf("%s/addemergencycontact", prefix), AddEmergencyContact).Methods("POST", "OPTIONS")
+	router.HandleFunc(fmt.Sprintf("%s/listemergencycontact", prefix), ListEmergencyContact).Methods("POST", "OPTIONS")
+	router.HandleFunc(fmt.Sprintf("%s/deleteemergencycontact", prefix), DeleteEmergencyContact).Methods("POST", "OPTIONS")
 	router.Use(mainhandler.LogReq)
 	log.Println(fmt.Sprintf("Login Server running at port %d", port))
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), router))
