@@ -24,42 +24,12 @@ func main() {
 }
 
 func homePage(w http.ResponseWriter, r *http.Request) {
-	tmpl := `
-	<!DOCTYPE html>
-	<html>
-	<head>
-		<title>Elderly Fall Risk Assessment</title>
-	</head>
-	<body>
-		<h1>Elderly Fall Risk Assessment</h1>
-		<form action="/submit" method="POST">
-			<label>How would you rate your leg strength (1-5)?</label><br>
-			<input type="number" name="leg_strength" min="1" max="5" required><br><br>
-
-			<label>How would you rate your eyesight (1-5)?</label><br>
-			<input type="number" name="vision" min="1" max="5" required><br><br>
-
-			<label>How would you rate your balance (1-5)?</label><br>
-			<input type="number" name="balance" min="1" max="5" required><br><br>
-
-			<label>Are you currently taking medication that affects your balance? (1 for Yes, 0 for No)</label><br>
-			<input type="number" name="medication" min="0" max="1" required><br><br>
-
-			<label>Have you had a fall in the last year? (1 for Yes, 0 for No)</label><br>
-			<input type="number" name="history_of_falls" min="0" max="1" required><br><br>
-
-			<label>Do you have a knee injury? (1 for Yes, 0 for No)</label><br>
-			<input type="number" name="knee_injury" min="0" max="1" required><br><br>
-
-			<input type="submit" value="Submit">
-		</form>
-		{{if .}}
-			<h2>Your Fall Risk Assessment Result: {{.}}</h2>
-		{{end}}
-	</body>
-	</html>
-	`
-	t, _ := template.New("form").Parse(tmpl)
+	t, err := template.ParseFiles("assessment.html")
+	if err != nil {
+		fmt.Println("Error loading template:", err)
+		http.Error(w, "Error Loading Assessment Form. Please Try Again.", http.StatusInternalServerError)
+		return
+	}
 	t.Execute(w, result)
 }
 
