@@ -12,6 +12,9 @@
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<link rel="stylesheet" href="assets/css/setting.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		<style>#ListEmergencyNumbers {
+			visibility: hidden; /* Button exists but is invisible */
+		  }</style>
 	</head>
 	<body class="is-preload">
 		<!-- Wrapper -->
@@ -41,9 +44,9 @@
 						<h2>Menu</h2>
 						<ul>
 							<li><a href="index.html">Home</a></li>
-							<li><a href="generic.html">My Profile</a></li>
-							<li><a href="generic.html">Call Doctor</a></li>
-							<li><a href="generic.html">Setting</a></li>
+							<li><a href="userprofile.html">My Profile</a></li>
+							<li><a href="emergencycontact.html">Call Doctor</a></li>
+							<li><a href="setting.html">Setting</a></li>
 							<li><a href="elements.html">Logout</a></li>
 						</ul>
 					</nav>
@@ -126,5 +129,10 @@
 			<script src="assets/js/main.js"></script>
 			<script src="assets/js/emergencycall.js"></script>
 			<script src="assets/js/setting.js"></script>
+			<script>
+				window.onload = function() {
+				  document.getElementById("ListEmergencyNumbers").click();
+				};
+			</script>
 	</body>
 </html>

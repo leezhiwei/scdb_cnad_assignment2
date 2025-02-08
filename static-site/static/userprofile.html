@@ -1,16 +1,23 @@
 <!DOCTYPE HTML>
-<!--
-	Phantom by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
 <html>
 	<head>
-		<title>Generic - Phantom by HTML5 UP</title>
+		<title>My Profile</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		<style>
+			button {    width: 25%;
+						margin-top: 3%;
+						font-size: 24px;
+						background-color: #5fdc63;
+						color: white;
+						border: none;
+						border-radius: 4px;
+						cursor: pointer; }
+			button:hover {     background-color: #5cd362;
+				color: white!important;  }
+		</style>
 	</head>
 	<body class="is-preload">
 		<!-- Wrapper -->
@@ -40,24 +47,31 @@
 						<h2>Menu</h2>
 						<ul>
 							<li><a href="index.html">Home</a></li>
-							<li><a href="generic.html">Ipsum veroeros</a></li>
-							<li><a href="generic.html">Tempus etiam</a></li>
-							<li><a href="generic.html">Consequat dolor</a></li>
-							<li><a href="elements.html">Elements</a></li>
+							<li><a href="userprofile.html">My Profile</a></li>
+							<li><a href="emergencycontact.html">Call Doctor</a></li>
+							<li><a href="setting.html">Setting</a></li>
+							<li><a href="elements.html">Logout</a></li>
 						</ul>
 					</nav>
 
 				<!-- Main -->
-					<div id="main">
-						<div class="inner">
-							<h1>Generic Page</h1>
-							<span class="image main"><img src="images/pic13.jpg" alt="" /></span>
-							<p>Donec eget ex magna. Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque venenatis dolor imperdiet dolor mattis sagittis. Praesent rutrum sem diam, vitae egestas enim auctor sit amet. Pellentesque leo mauris, consectetur id ipsum sit amet, fergiat. Pellentesque in mi eu massa lacinia malesuada et a elit. Donec urna ex, lacinia in purus ac, pretium pulvinar mauris. Curabitur sapien risus, commodo eget turpis at, elementum convallis elit. Pellentesque enim turpis, hendrerit tristique.</p>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis dapibus rutrum facilisis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Etiam tristique libero eu nibh porttitor fermentum. Nullam venenatis erat id vehicula viverra. Nunc ultrices eros ut ultricies condimentum. Mauris risus lacus, blandit sit amet venenatis non, bibendum vitae dolor. Nunc lorem mauris, fringilla in aliquam at, euismod in lectus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In non lorem sit amet elit placerat maximus. Pellentesque aliquam maximus risus, vel venenatis mauris vehicula hendrerit.</p>
-							<p>Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque venenatis dolor imperdiet dolor mattis sagittis. Praesent rutrum sem diam, vitae egestas enim auctor sit amet. Pellentesque leo mauris, consectetur id ipsum sit amet, fersapien risus, commodo eget turpis at, elementum convallis elit. Pellentesque enim turpis, hendrerit tristique lorem ipsum dolor.</p>
-						</div>
-					</div>
+					<div id="main" style="padding-left: 10%;">
 
+					<h1>Profile Page</h1>
+			<form>
+				<div>
+					<div class="form-group">
+					<label for="name">Name:</label>
+					<input type="text" id="name" name="name" placeholder="Name">
+					</div>
+					<div class="form-group">
+					<label for="phone">Phone:</label>
+					<input type="text" id="phone" name="phone" placeholder="Phone" required >
+					</div>
+					<button id="updateProfile">Update Profile</button>
+				</div>
+			</form>
+				</div>
 				<!-- Footer -->
 					<footer id="footer">
 						<div class="inner">
@@ -107,6 +121,7 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
-
+			<script src="assets/js/setting.js"></script>
+			<script src="assets/js/profile.js"></script>
 	</body>
 </html>

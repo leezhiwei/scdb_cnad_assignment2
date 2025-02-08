@@ -273,7 +273,7 @@ func ListEmergencyContact(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Contacts found:", contacts)
 	// Return the results as JSON
 	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "applqication/json")
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(contacts)
 }
 
@@ -382,11 +382,11 @@ func updateSenior(w http.ResponseWriter, r *http.Request) {
 	query := `
         UPDATE Senior
         SET Phone_number = COALESCE(NULLIF(?, ''), Phone_number),
-            Name = COALESCE(NULLIF(?, ''), Name),
-            UpdatedAt = NOW()
+            Name = COALESCE(NULLIF(?, ''), Name)
         WHERE SeniorID = ?
     `
 	_, err = db.Exec(query, seniordata.Phone, seniordata.Name, seniordata.SeniorID) // run
+
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "Error updating Senior profile") // if err, error
@@ -394,7 +394,10 @@ func updateSenior(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK) // else success
-	fmt.Fprintf(w, "Senior updated successfully")
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": "Updated Senior",
+	})
 	return
 }
 

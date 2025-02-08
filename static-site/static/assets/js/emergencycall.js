@@ -37,7 +37,7 @@
         let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
         return match ? match[2] : null;
     }
-    
+
     $("#ListEmergencyNumbers").on("click", function () {
         let seniorId = getCookie("senior_id");
     
@@ -45,7 +45,8 @@
             alert("You need to log in first.");
             return;
         }
-    
+        // Get reference to the button element
+
         $.ajax({
             url: "http://localhost:8080/api/v1/login/listemergencycontact",
             type: "POST",
@@ -74,7 +75,7 @@
                                         <td>${contact.contactnumber}</td>
                                         <td>
                                             <button> <a href="tel:+65${contact.contactnumber}">call this number</a></button>
-                                            <button class="btn btn-danger btn-sm delete-contact" data-id="${contact.id}">Delete</button>
+                                            <button class="btn btn-danger btn-sm delete-contact" data-id="${contact.contact_id}">Delete</button>
                                         </td>
                                     </tr>
                                 `).join("")}
