@@ -1,3 +1,3 @@
-let finalurl = endpoint.gait_analysis
+let finalurl = endpoints.gait_analysis
 
 $('#linkClick').attr("href", finalurl)

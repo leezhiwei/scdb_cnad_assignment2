@@ -22,7 +22,7 @@ $(document).ready(function () {
         formData.senior_id = seniorId;
 
         $.ajax({
-            url: "https://localhost:8081/api/v1/assessment/submit",
+            url: endpoints.assessment + "/submit",
             type: "POST",
             data: JSON.stringify(formData),
             contentType: "application/json",

@@ -151,6 +151,7 @@ func GetConfig() Config {
 var config Config
 
 func main() {
+	config = GetConfig()
 	var prefix string = "/api/v1/medqna"
 	// Mux router for routing HTTP request
 	router := mux.NewRouter()
