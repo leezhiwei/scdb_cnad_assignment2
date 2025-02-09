@@ -3,18 +3,34 @@
 	html5up.net | @ajlkn
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
-
-let seniorId = getCookie("senior_id");
-console.log("Retrieved senior_id:", seniorId);
-
-if (!seniorId) {
-	alert("You need to log in first.");
-	window.location.href ="login.html"
-	return;
+function getCookie(name) {
+	var nameEQ = name + "=";
+	var ca = document.cookie.split(';');
+	for (var i = 0; i < ca.length; i++) {
+	  var c = ca[i];
+	  while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+	  if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+	}
+	return null;
+  }
+  function deleteAllCookies() {
+    document.cookie.split(';').forEach(cookie => {
+        const eqPos = cookie.indexOf('=');
+        const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
+        document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    });
 }
 
+  
 (function($) {
+	let seniorId = getCookie("senior_id");
+	console.log("Retrieved senior_id:", seniorId);
 
+	if (!seniorId) {
+		alert("You need to log in first.");
+		window.location.href ="login.html"
+		return;
+	}
 	var	$window = $(window),
 		$body = $('body');
 
