@@ -40,12 +40,6 @@ type StringAssessment struct {
 
 var result string
 
-// func main() {
-// 	http.HandleFunc("/", homePage)
-// 	http.HandleFunc("/submit", submitAssessment)
-// 	http.ListenAndServe(":8080", nil)
-// }
-
 func homePage(w http.ResponseWriter, r *http.Request) {
 	t, err := template.ParseFiles("assessment.html")
 	if err != nil {
