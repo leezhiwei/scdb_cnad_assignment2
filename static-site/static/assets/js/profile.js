@@ -9,6 +9,7 @@ $(document).ready(function () {
     
     if (!seniorId) {
         alert("You need to log in first.");
+        window.location.href ="login.html"
         return;
     }
     
