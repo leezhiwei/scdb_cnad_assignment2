@@ -1,0 +1,19 @@
+services:
+  gaitanalyzer:
+    image: leezhiwei/gait_analysis
+    container_name: gaitanalyzer
+    network_mode: "host"
+    volumes:
+      - ${PWD}/input_videos:/app/input_videos  
+      - ${PWD}/output_videos:/app/output_videos
+    restart: unless-stopped  
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    volumes:
+      - ollama:/root/.ollama
+    ports:
+      - "11434:11434"
+    restart: unless-stopped
+volumes:
+  ollama:

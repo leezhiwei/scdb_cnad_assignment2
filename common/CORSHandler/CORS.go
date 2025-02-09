@@ -1,18 +1,18 @@
 package CORShandler
 
 import (
-	"net/http"
 	"fmt"
+	"net/http"
 )
 
 var DebugMode bool = true
 var Hostname string = "localhost"
 
 func SetCORSHeaders(w *http.ResponseWriter, r *http.Request) bool { // if fn returns true, cors preflight
-	if DebugMode{
-		(*w).Header().Set("Access-Control-Allow-Origin", "http://localhost") 
+	if DebugMode {
+		(*w).Header().Set("Access-Control-Allow-Origin", "https://localhost")
 	} else {
-		(*w).Header().Set("Access-Control-Allow-Origin", fmt.Sprintf("http://%s", Hostname)) 
+		(*w).Header().Set("Access-Control-Allow-Origin", fmt.Sprintf("https://%s", Hostname))
 	}
 	(*w).Header().Set("Access-Control-Allow-Credentials", "true")
 	(*w).Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS") // cors

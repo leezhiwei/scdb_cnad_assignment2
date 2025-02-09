@@ -1,0 +1,9 @@
+streamlit
+mediapipe
+scipy
+opencv-python
+numpy
+pandas
+matplotlib
+langchain-community
+langchain-core
