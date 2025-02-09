@@ -14,3 +14,71 @@ label {
 input {
     font-size: 200px; 
 }
+
+/* Health guide container styling */
+#healthGuideContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.health-guide {
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+}
+
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
+    background: #000;
+    margin-top: 15px;
+    border-radius: 8px;
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    h3 {
+        font-size: 1.2em;
+    }
+
+    .health-guide {
+        width: 90%; /* Full width on smaller screens */
+    }
+
+    .video-container {
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    h3 {
+        font-size: 1em;
+    }
+
+    .health-guide {
+        width: 100%; /* Full width on very small screens */
+    }
+
+    .video-container {
+        margin-top: 8px;
+    }
+}
