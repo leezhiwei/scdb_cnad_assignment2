@@ -28,7 +28,6 @@ class StreamlitApp:
             Analyze your gait for health disorders at the comfort of your home.
             """
                 )
-        st.image(image)
         st.header("Video Upload")
         uploaded_file = st.file_uploader(
             "Choose a short video of you moving from left to right (or) right to left covering your entire body.",
