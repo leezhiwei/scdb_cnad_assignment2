@@ -19,11 +19,11 @@ Users can add emergency contacts, allowing them to quickly reach out for help in
 ### Call Doctor:
 Users can have audio and video calls with a doctor to consult about anything they need.
 ### AI Q & A:
-We have a trained AI to answer questions regarding well-being and health-related problems.
+Users can ask any questions such as what is diabetes or any other information they might want to know more through Med42 Llama3 model.
 ### Health Advisement:
 We will work with doctors to provide advice on any health- or medicine-related questions.
 ### Health Guide:
-A comprehensive health guide thoughtfully designed to help all seniors maintain their well-being and enjoy good health.
+A comprehensive health guide videos to help all seniors maintain their well-being and good health.
 
 ## Technologies Used
 - Deployment
