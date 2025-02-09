@@ -40,6 +40,6 @@ func main() {
 	var port int = 443                                             // normal http port
 	log.Println(fmt.Sprintf("Server Running on port %d...", port)) // status
 	// print out running server
-	log.Fatal(http.ListenAndServeTLS(fmt.Sprintf(":%d", port), "server.cert", "server.key", customNotFound(http.Dir("./static")))) // runs server
+	log.Fatal(http.ListenAndServeTLS(fmt.Sprintf(":%d", port), "../certs/server.cert", "../certs/server.key", customNotFound(http.Dir("./static")))) // runs server
 	// run server, with fatal logs
 }

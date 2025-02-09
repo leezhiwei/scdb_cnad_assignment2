@@ -24,7 +24,7 @@ $("#send-sms").on("click", function () {
     }
 
     $.ajax({
-        url: "http://localhost:8080/api/v1/login/sendsms",
+        url: "https://localhost:8080/api/v1/login/sendsms",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify({ phone: phone }),
@@ -48,7 +48,7 @@ $("#login").on("click", function () {
     }
 
     $.ajax({
-        url: "http://localhost:8080/api/v1/login/login",
+        url: "https://localhost:8080/api/v1/login/login",
         type: "POST",
         contentType: "application/json",
         xhrFields: {

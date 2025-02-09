@@ -168,7 +168,7 @@ func main() {
 	})
 	router.POST("/join/:meetingID/:userID", joinMeeting)
 	router.GET("/peer/:meetingID/:userID", getPeerID)
-	router.RunTLS(":8080", "server.cert", "server.key")
+	router.RunTLS(":8080", "../certs/server.cert", "../certs/server.key")
 }
 
 // user is the caller of the method
