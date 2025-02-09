@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2025-02-09T17:16:28Z"
+  labels:
+    app: scdb-login
+  name: scdb-login
+  namespace: scdb-cnad
+  resourceVersion: "689198"
+  uid: 8cd33d21-2ca4-4180-9712-ef0c3997f347
+spec:
+  clusterIP: 10.99.64.224
+  clusterIPs:
+  - 10.99.64.224
+  externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - nodePort: 31440
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: scdb-login
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}

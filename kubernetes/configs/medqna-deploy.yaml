@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "3"
+  creationTimestamp: "2025-02-09T17:31:31Z"
+  generation: 3
+  labels:
+    app: scdb-medqna
+  name: scdb-medqna
+  namespace: scdb-cnad
+  resourceVersion: "712195"
+  uid: 97fcc4e2-0be7-4889-b73c-48ee51e52f59
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: scdb-medqna
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/restartedAt: "2025-02-10T02:41:49+08:00"
+      creationTimestamp: null
+      labels:
+        app: scdb-medqna
+    spec:
+      containers:
+      - image: harbor.leezhiwei.com/scdb_assg2/medqna-serv
+        imagePullPolicy: Always
+        name: medqna-serv
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: harbor
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: "2025-02-09T17:31:29Z"
+    lastUpdateTime: "2025-02-09T18:46:06Z"
+    message: ReplicaSet "scdb-medqna-588dfc949d" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  - lastTransitionTime: "2025-02-09T19:46:39Z"
+    lastUpdateTime: "2025-02-09T19:46:39Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  observedGeneration: 3
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1

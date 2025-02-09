@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2025-02-09T17:29:48Z"
+  labels:
+    app: scdb-video
+  name: scdb-video
+  namespace: scdb-cnad
+  resourceVersion: "691674"
+  uid: 4687df2b-78c4-4cca-acf3-0ee94f333a2f
+spec:
+  clusterIP: 10.111.32.207
+  clusterIPs:
+  - 10.111.32.207
+  externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - nodePort: 30721
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: scdb-video
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}
