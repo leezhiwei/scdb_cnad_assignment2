@@ -9,7 +9,7 @@ $(document).ready(function () {
 
     // Fetch health guide data from the backend
     $.ajax({
-        url: "http://localhost:8083/api/v1/healthguide/suggestions?senior_id=" + seniorId,
+        url: endpoints.healthguide + "/suggestions?senior_id=" + seniorId,
         type: "GET",
         contentType: "application/json",
         success: function (response) {
