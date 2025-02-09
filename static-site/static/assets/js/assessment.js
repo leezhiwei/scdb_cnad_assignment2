@@ -12,16 +12,19 @@ function getFormData($form){
 
 $(document).ready(function () {
     $("form").on("submit", function (event) {
-        event.preventDefault(); // Prevent page reload
+        // Obtain seniorID
+        let seniorId = document.cookie = "senior_id";
+        // Prevent page reload
+        event.preventDefault(); 
 
         let formData = getFormData($("#healthasst"))
+        formData.senior_id = seniorId;
 
         $.ajax({
             url: "http://localhost:8080/api/v1/assessment/submit",
             type: "POST",
             data: JSON.stringify(formData),
             contentType: "application/json",
-            contentType: false,  // Prevent jQuery from setting a default content type
             dataType: "json",  // Ensure the response is treated as JSON
             success: function (response) {
                 // Update the content of the #response paragraph

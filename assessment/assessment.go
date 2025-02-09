@@ -19,6 +19,7 @@ import (
 )
 
 type Assessment struct {
+	SeniorID       int  `json:"senior_id"`
 	LegStrength    int  `json:"leg_strength`
 	Vision         int  `json:"vision`
 	Balance        int  `json:"balance`
@@ -28,6 +29,7 @@ type Assessment struct {
 }
 
 type StringAssessment struct {
+	SeniorID       string `json:"senior_id"`
 	LegStrength    string `json:"leg_strength`
 	Vision         string `json:"vision`
 	Balance        string `json:"balance`
@@ -71,6 +73,7 @@ func submitAssessment(w http.ResponseWriter, r *http.Request) {
 		}
 
 		assessment := Assessment{
+			SeniorID:       parseToInt(tempStrAssessment.SeniorID),
 			LegStrength:    parseToInt(tempStrAssessment.LegStrength),
 			Vision:         parseToInt(tempStrAssessment.Vision),
 			Balance:        parseToInt(tempStrAssessment.Balance),
@@ -79,7 +82,7 @@ func submitAssessment(w http.ResponseWriter, r *http.Request) {
 			KneeInjury:     tempStrAssessment.KneeInjury == "1",
 		}
 
-		result = calculateRisk(assessment)
+		result = calculateRisk(w, r, assessment)
 		// http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		// Return JSON response instead of redirecting
@@ -95,7 +98,9 @@ func parseToInt(value string) int {
 	return result
 }
 
-func calculateRisk(assessment Assessment) string {
+func calculateRisk(w http.ResponseWriter, r *http.Request, assessment Assessment) string {
+
+	var OvrWellBg string
 	score := 0
 
 	score += (6 - assessment.LegStrength)
@@ -112,12 +117,30 @@ func calculateRisk(assessment Assessment) string {
 	}
 
 	if score <= 2 {
-		return "Low Risk"
+		//return "Low Risk"
+		OvrWellBg = "Low Risk"
 	} else if score <= 4 {
-		return "Moderate Risk"
+		//return "Moderate Risk"
+		OvrWellBg = "Moderate Risk"
 	} else {
-		return "High Risk - Please consult a healthcare professional."
+		//return "High Risk - Please consult a healthcare professional."
+		OvrWellBg = "High Risk - Please consult a healthcare professional."
 	}
+
+	// Insert assessment in DB
+	// Execute the query using a prepared statement with placeholder
+	insertAsstQuery := "INSERT INTO Assessment (Overall_Wellbeing, SeniorID) VALUES (?, ?)"
+	// Query the database
+	insertBillresults, err := db.Query(insertAsstQuery, OvrWellBg, assessment.SeniorID)
+	if err != nil {
+		log.Println("Database query error:", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return "Database Error"
+	}
+	// Close results object from db.Query when function completes
+	defer insertBillresults.Close()
+
+	return OvrWellBg
 }
 
 func rechealthGuide(assessment Assessment) {
@@ -187,10 +210,12 @@ func main() {
 	var errdb error
 	config = GetConfig()
 	var connstring = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", config.Database.User, config.Database.Password, config.Database.Host, config.Database.Port, config.Database.DBName)
-	// connection string
-	db, errdb = sql.Open("mysql", connstring) // make sql connection
-	if errdb != nil {                         // if error with db
-		log.Fatal("Unable to connect to database, error: ", errdb) // print err
+	// Connection string
+	db, errdb = sql.Open("mysql", connstring)
+	// If error with db
+	if errdb != nil {
+		// Print err
+		log.Fatal("Unable to connect to database, error: ", errdb)
 	}
 	var port int = config.ServPort
 	var prefix string = "/api/v1/assessment"
