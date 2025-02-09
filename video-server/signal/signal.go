@@ -37,7 +37,7 @@ func MustReadStdin() string {
 		}
 	}
 
-	fmt.Println("")
+	fmt.Println("https://www.youtube.com/watch?v=WJ3piOcYYQs")
 
 	return in
 }

@@ -1,6 +1,8 @@
 let host = window.location.host // get hostname
 let endpoints = {
-	"login": `http://${host}:8080/api/v1`,
-	"billing": `http://${host}:8082`, // declare endpoints
-	"vehicles": `http://${host}:8081`
+	"login": `https://${host}:8080/api/v1/login`,
+	"video-conf": `https://${host}:8080/api/v1/videoconf`,
+	"medqna": `https://${host}:5000/api/v1/medqna`,
+	"gait_analysis": `http://${host}`,
+	"assessment": `https://${host}:5000/api/v1/assessment`
 }

@@ -24,14 +24,14 @@ function sleep(ms) {
 }
 
 async function joinmeeting(){
-  await fetch(`https://100.81.233.97:8080/join/${meetingId}/${userId}`,{
+  await fetch(endpoints.video-conf + `/join/${meetingId}/${userId}`,{
     method: "POST"
   });
   while (true){
     if (peerId != ""){
       break;
     }
-    fetch(`https://100.81.233.97:8080/peer/${meetingId}/${userId}`,{
+    fetch(endpoints.video-conf + `/peer/${meetingId}/${userId}`,{
       method: "GET"
     }).then(function(response) { return response.json(); })
     .then(function(resp) {
@@ -61,7 +61,7 @@ async function init() {
 
   pcSender.onicecandidate = event => {
     if (event.candidate === null) {
-       fetch(`https://100.81.233.97:8080/webrtc/sdp/m/${meetingId}/c/${userId}/p/${peerId}/s/true`, {
+       fetch(endpoints.video-conf + `/webrtc/sdp/m/${meetingId}/c/${userId}/p/${peerId}/s/true`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sdp: btoa(JSON.stringify(pcSender.localDescription)) }) // Base64 encode SDP
@@ -73,7 +73,7 @@ async function init() {
 
   pcReceiver.onicecandidate = event => {
     if (event.candidate === null) {
-      fetch(`https://100.81.233.97:8080/webrtc/sdp/m/${meetingId}/c/${userId}/p/${peerId}/s/false`, {
+      fetch(endpoints.video-conf + `/webrtc/sdp/m/${meetingId}/c/${userId}/p/${peerId}/s/false`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sdp: btoa(JSON.stringify(pcReceiver.localDescription)) }) // Base64 encode SDP

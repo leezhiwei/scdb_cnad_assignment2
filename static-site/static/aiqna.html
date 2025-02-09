@@ -115,6 +115,7 @@
 			</div>
 
 		<!-- Scripts -->
+			<script src="assets/js/endpoints.js"></script>
 			<script>
 				document.getElementById("questionForm").addEventListener("submit", function(event) {
 					event.preventDefault(); // Prevent default form submission
@@ -125,7 +126,7 @@
 						return;
 					}
 				
-					fetch("http://localhost:5000/api/v1/medqna/chat", {
+					fetch(endpoints.medqna + "/chat", {
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json"

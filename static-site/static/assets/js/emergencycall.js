@@ -14,7 +14,7 @@
         }
 
         $.ajax({
-            url: "http://localhost:8080/api/v1/login/addemergencycontact",
+            url: endpoints.login + "/addemergencycontact",
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify({
@@ -48,7 +48,7 @@
         // Get reference to the button element
 
         $.ajax({
-            url: "http://localhost:8080/api/v1/login/listemergencycontact",
+            url: endpoints.login + "/listemergencycontact",
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify({ senior_id: parseInt(seniorId) }),
@@ -102,7 +102,7 @@
         }
     
         $.ajax({
-            url: "http://localhost:8080/api/v1/login/deleteemergencycontact",
+            url: endpoints.login + "/deleteemergencycontact",
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify({ contact_id: parseInt(contactId) }),

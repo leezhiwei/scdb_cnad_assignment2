@@ -15,7 +15,7 @@ $(document).ready(function () {
     
 
     $.ajax({
-        url: "http://localhost:8080/api/v1/login/getsenior",
+        url: endpoints.login + "/getsenior",
         type: "POST",
         data: JSON.stringify({ senior_id: parseInt(seniorId) }),
         success: function (response) {
@@ -38,7 +38,7 @@ $(document).ready(function () {
         }
 
         $.ajax({
-            url: "http://localhost:8080/api/v1/login/updatesenior",
+            url: endpoints.login + "/updatesenior",
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify({

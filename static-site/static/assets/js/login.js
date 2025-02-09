@@ -48,7 +48,7 @@ $("#login").on("click", function () {
     }
 
     $.ajax({
-        url: "https://localhost:8080/api/v1/login/login",
+        url: endpoints.login + "/login",
         type: "POST",
         contentType: "application/json",
         xhrFields: {
@@ -95,7 +95,7 @@ $(document).ready(function () {
         }
 
         $.ajax({
-            url: "http://localhost:8080/api/v1/login/addemergencycontact",
+            url: endpoints.login + "/addemergencycontact",
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify({
@@ -124,7 +124,7 @@ $("#ListEmergencyNumbers").on("click", function () {
     }
 
     $.ajax({
-        url: "http://localhost:8080/api/v1/login/listemergencycontact",
+        url: endpoints.login + "/listemergencycontact",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify({ senior_id: parseInt(seniorId) }),
