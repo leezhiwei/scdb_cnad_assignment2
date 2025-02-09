@@ -124,7 +124,7 @@ func main() {
 		},
 	}
 
-	router.POST("/webrtc/sdp/m/:meetingId/c/:userID/p/:peerId/s/:isSender", func(c *gin.Context) {
+	router.POST("/api/v1/videoconf/webrtc/sdp/m/:meetingId/c/:userID/p/:peerId/s/:isSender", func(c *gin.Context) {
 		clear(meetings)
 		isSender, _ := strconv.ParseBool(c.Param("isSender"))
 		userID := c.Param("userID")
@@ -166,8 +166,8 @@ func main() {
 		}
 		c.JSON(http.StatusOK, Sdp{Sdp: Signal.Encode(answer)})
 	})
-	router.POST("/join/:meetingID/:userID", joinMeeting)
-	router.GET("/peer/:meetingID/:userID", getPeerID)
+	router.POST("/api/v1/videoconf/join/:meetingID/:userID", joinMeeting)
+	router.GET("/api/v1/videoconf/peer/:meetingID/:userID", getPeerID)
 	router.RunTLS(":8080", "../certs/server.cert", "../certs/server.key")
 }
 
