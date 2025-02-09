@@ -167,5 +167,5 @@ func main() {
 
 	// Listen at port 5000
 	fmt.Println("Listening at port 5000")
-	log.Fatal(http.ListenAndServeTLS(":5000", "../certs/server.cert", "../certs/server.key", router))
+	log.Fatal(http.ListenAndServe(":5000", router))
 }

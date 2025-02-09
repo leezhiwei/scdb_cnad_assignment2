@@ -221,5 +221,5 @@ func main() {
 	router.HandleFunc(fmt.Sprintf("%s/submit", prefix), submitAssessment).Methods("POST", "OPTIONS")
 	router.Use(mainhandler.LogReq)
 	log.Println(fmt.Sprintf("Assesment running at port %d", port))
-	log.Fatal(http.ListenAndServeTLS(fmt.Sprintf(":%d", port), "../certs/server.cert", "../certs/server.key", router))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), router))
 }

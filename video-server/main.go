@@ -168,7 +168,7 @@ func main() {
 	})
 	router.POST("/api/v1/videoconf/join/:meetingID/:userID", joinMeeting)
 	router.GET("/api/v1/videoconf/peer/:meetingID/:userID", getPeerID)
-	router.RunTLS(":8080", "../certs/server.cert", "../certs/server.key")
+	router.Run(":8080")
 }
 
 // user is the caller of the method
