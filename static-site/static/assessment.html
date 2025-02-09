@@ -40,17 +40,17 @@
 						<h2>Menu</h2>
 						<ul>
 							<li><a href="index.html">Home</a></li>
-							<li><a href="generic.html">Ipsum veroeros</a></li>
-							<li><a href="generic.html">Tempus etiam</a></li>
-							<li><a href="generic.html">Consequat dolor</a></li>
-							<li><a href="elements.html">Elements</a></li>
+							<li><a href="userprofile.html">My Profile</a></li>
+							<li><a href="emergencycontact.html">Call Doctor</a></li>
+							<li><a href="setting.html">Setting</a></li>
+							<li><a href="Login.html">Logout</a></li>
 						</ul>
 					</nav>
 
 				<!-- Main -->
 					<div id="main">
 						<div class="inner">
-							<form action="http://localhost:8080/submit" method="POST">
+							<form id="healthasst" action="" method="POST">
 								<label>How would you rate your leg strength (1-5)?</label><br>
 								<input type="number" name="leg_strength" min="1" max="5" required><br><br>
 					
@@ -71,6 +71,7 @@
 					
 								<input type="submit" value="Submit">
 							</form>
+							<p id="response"></p>
 						</div>
 					</div>
 
@@ -121,6 +122,7 @@
 			<script src="assets/js/jquery.min.js"></script>
 			<script src="assets/js/browser.min.js"></script>
 			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/assessment.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
 
