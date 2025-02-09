@@ -16,5 +16,5 @@ $('#submitbutton').click(function () {
         return
     }
     document.cookie = "username=" + username
-    window.location.href = "calldocter.html"
+    window.location.href = "calldoctor.html"
 });
