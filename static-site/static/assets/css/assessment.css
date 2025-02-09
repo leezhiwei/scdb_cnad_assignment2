@@ -53,32 +53,3 @@ input {
     width: 100%;
     height: 100%;
 }
-
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-    h3 {
-        font-size: 1.2em;
-    }
-
-    .health-guide {
-        width: 90%; /* Full width on smaller screens */
-    }
-
-    .video-container {
-        margin-top: 10px;
-    }
-}
-
-@media (max-width: 480px) {
-    h3 {
-        font-size: 1em;
-    }
-
-    .health-guide {
-        width: 100%; /* Full width on very small screens */
-    }
-
-    .video-container {
-        margin-top: 8px;
-    }
-}
