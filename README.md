@@ -10,8 +10,8 @@
 SCDB aims to provide seniors with an easy-to-use digital platform for preliminary health and fall risk self-assessment in the comfort of their homes. Through AI-driven assessment forms, photo-based injury analysis, and real-time video or audio calls with doctors, we offer proactive healthcare solutions. By leveraging technology, we ensure early detection of health concerns and seamless access to medical assistance, enhancing the safety and well-being of elderly individuals.
 
 ## Features
-### Photo Upload:
-Take a picture of the injury or pain area that you are feeling and send it to us, we can give suggestion according to injury.
+### Gait Analysis:
+By taking a video of yourself walking, we can determine your gait, by reviewing video using a Computer Vision Model.
 ### Assessment Forms:
 Users can fill out and upload an assessment form for us to review and provide possible suggestions.
 ### Emergency Contact:
