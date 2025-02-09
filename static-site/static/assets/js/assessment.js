@@ -13,7 +13,8 @@ function getFormData($form){
 $(document).ready(function () {
     $("form").on("submit", function (event) {
         // Obtain seniorID
-        let seniorId = document.cookie = "senior_id";
+        let seniorId = getCookie("senior_id");
+        console.log(seniorId)
         // Prevent page reload
         event.preventDefault(); 
 
@@ -21,7 +22,7 @@ $(document).ready(function () {
         formData.senior_id = seniorId;
 
         $.ajax({
-            url: "http://localhost:8081/api/v1/assessment/submit",
+            url: "https://localhost:8081/api/v1/assessment/submit",
             type: "POST",
             data: JSON.stringify(formData),
             contentType: "application/json",
