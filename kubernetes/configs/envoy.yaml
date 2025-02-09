@@ -1,0 +1,150 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: mainclass
+spec:
+  controllerName: gateway.envoyproxy.io/gatewayclass-controller
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: scdb-gateway
+spec:
+  gatewayClassName: mainclass
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+        - kind: Secret
+          group: ""
+          name: main-lb-cert
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: mainroutes
+spec:
+  parentRefs:
+    - name: scdb-gateway
+  hostnames:
+    - "scdb.leezhiwei.com"
+  rules:
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: scdb-static
+          port: 443
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: assessmentroute
+spec:
+  parentRefs:
+    - name: scdb-gateway
+  hostnames:
+    - "scdb.leezhiwei.com"
+  rules:
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: scdb-assessment
+          port: 8080
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /api/v1/assessment
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: healthguideroute
+spec:
+  parentRefs:
+    - name: scdb-gateway
+  hostnames:
+    - "scdb.leezhiwei.com"
+  rules:
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: scdb-healthguide
+          port: 8080
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /api/v1/healthguide
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: loginroute
+spec:
+  parentRefs:
+    - name: scdb-gateway
+  hostnames:
+    - "scdb.leezhiwei.com"
+  rules:
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: scdb-login
+          port: 8080
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /api/v1/login
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: medqnaroute
+spec:
+  parentRefs:
+    - name: scdb-gateway
+  hostnames:
+    - "scdb.leezhiwei.com"
+  rules:
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: scdb-medqna
+          port: 5000
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /api/v1/medqna
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: videoroute
+spec:
+  parentRefs:
+    - name: scdb-gateway
+  hostnames:
+    - "scdb.leezhiwei.com"
+  rules:
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: scdb-video
+          port: 8080
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /api/v1/videoconf
