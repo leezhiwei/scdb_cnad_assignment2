@@ -118,7 +118,7 @@ func calculateRisk(w http.ResponseWriter, r *http.Request, assessment Assessment
 		OvrWellBg = "Moderate Risk"
 	} else {
 		//return "High Risk - Please consult a healthcare professional."
-		OvrWellBg = "High Risk - Please consult a healthcare professional."
+		OvrWellBg = "High Risk - Please consult a healthcare professional"
 	}
 
 	// Insert assessment in DB
