@@ -8,6 +8,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /static-serv
 FROM alpine:latest
 WORKDIR /
 COPY static/ /static
+COPY ../certs /
 COPY --from=build /static-serv /static-serv
-EXPOSE 80
+EXPOSE 443
 CMD ["/static-serv"]

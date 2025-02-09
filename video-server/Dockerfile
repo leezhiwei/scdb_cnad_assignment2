@@ -3,13 +3,13 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY ../common/ ./
+COPY signal/ ./
 COPY main.go ./main.go
-RUN CGO_ENABLED=0 GOOS=linux go build -o /login-serv
+RUN CGO_ENABLED=0 GOOS=linux go build -o /video-serv
 
 FROM alpine:latest
 WORKDIR /
 COPY ../certs /
-COPY --from=build /login-serv /login-serv
-COPY config.json /
+COPY --from=build /video-serv /video-serv
 EXPOSE 8080
 CMD ["/login-serv"]

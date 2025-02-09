@@ -3,13 +3,13 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY ../common/ ./
-COPY main.go ./main.go
-RUN CGO_ENABLED=0 GOOS=linux go build -o /login-serv
+COPY assessment.go ./main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o /assessment-serv
 
 FROM alpine:latest
 WORKDIR /
 COPY ../certs /
-COPY --from=build /login-serv /login-serv
+COPY --from=build /assessment-serv /assessment-serv
 COPY config.json /
 EXPOSE 8080
-CMD ["/login-serv"]
+CMD ["/healthguide-serv"]
