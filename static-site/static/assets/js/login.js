@@ -24,7 +24,7 @@ $("#send-sms").on("click", function () {
     }
 
     $.ajax({
-        url: "https://localhost:8080/api/v1/login/sendsms",
+        url: endpoints.login + "/sendsms",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify({ phone: phone }),
