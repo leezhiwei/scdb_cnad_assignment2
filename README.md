@@ -46,8 +46,9 @@ A comprehensive health guide thoughtfully designed to help all seniors maintain 
 
 ## Architecture
 The platform is built using a microservices architecture, ensuring scalability and flexibility.
-#### With three microservices: ??????????????????? 
-All microservices, the static website, and the MySQL database are interconnected. The static website displays data to the user, while user input is written to the database. Which ensure the website is fully function.
+![diagram](diagram.jpg)
+#### With seven microservices:
+All microservices, the static website, and the MySQL database are interconnected. The static website displays data to the user, while user input is written to the database. Which ensure the website is fully functioning.
 
 ## Layers:
 - Static Website:
