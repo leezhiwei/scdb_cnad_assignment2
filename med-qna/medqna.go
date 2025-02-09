@@ -91,7 +91,7 @@ func medicalqna(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// POST request to the Med42 Llama3 model endpoint
-	med42Endpoint := "http://192.168.2.108:8000/v1/chat/completions"
+	med42Endpoint := Config.API.Med42Endpoint
 	resp, err := http.Post(med42Endpoint, "application/json", bytes.NewBuffer(med42ReqBody))
 	if err != nil {
 		http.Error(w, "Error connecting to Med42 Llama3 model", http.StatusInternalServerError)
@@ -128,6 +128,12 @@ func medicalqna(w http.ResponseWriter, r *http.Request) {
 
 	// Display Med42 Llama3 response on go terminal
 	fmt.Printf("Med42 Llama3 Response: %s\n", response.Answer)
+}
+
+type Config struct {
+	API struct {
+		Med42Endpoint string `json:"med42Endpoint"`
+	} `json:"api"`
 }
 
 func main() {
