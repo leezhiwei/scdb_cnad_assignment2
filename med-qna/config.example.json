@@ -1,0 +1,6 @@
+{
+    "api": {
+        "med42Endpoint": "http://192.168.2.108:8000/v1/chat/completions"
+    },
+    "server_port": 8083
+}

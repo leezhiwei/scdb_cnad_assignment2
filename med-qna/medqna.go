@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 	CORShandler "github.com/leezhiwei/common/CORSHandler"
@@ -91,7 +92,7 @@ func medicalqna(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// POST request to the Med42 Llama3 model endpoint
-	med42Endpoint := Config.API.Med42Endpoint
+	med42Endpoint := config.API.Med42Endpoint
 	resp, err := http.Post(med42Endpoint, "application/json", bytes.NewBuffer(med42ReqBody))
 	if err != nil {
 		http.Error(w, "Error connecting to Med42 Llama3 model", http.StatusInternalServerError)
@@ -136,6 +137,19 @@ type Config struct {
 	} `json:"api"`
 }
 
+func GetConfig() Config {
+	configFile, err := os.Open("./config.json")
+	defer configFile.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	jsonParser := json.NewDecoder(configFile)
+	jsonParser.Decode(&config)
+	return config
+}
+
+var config Config
+
 func main() {
 	var prefix string = "/api/v1/medqna"
 	// Mux router for routing HTTP request
@@ -152,6 +166,6 @@ func main() {
 	router.Use(mainhandler.LogReq)
 
 	// Listen at port 5000
-	//fmt.Println("Listening at port 5000")
+	fmt.Println("Listening at port 5000")
 	log.Fatal(http.ListenAndServe(":5000", router))
 }
