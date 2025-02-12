@@ -101,10 +101,10 @@ func offerHealthGuide(w http.ResponseWriter, r *http.Request) {
 	// Select health guides in DB
 	// Select query using a prepared statement with placeholder
 	query := `
-        SELECT hg.HealthGuideDescription, hg.HealthGuideVideoLink
-        FROM HealthGuide hg
-        INNER JOIN Assessment a ON hg.Overall_Wellbeing = a.Overall_Wellbeing
-        WHERE a.SeniorID = ?`
+        SELECT MAX(a.AssessmentID), hg.HealthGuideDescription, hg.HealthGuideVideoLink
+		FROM HealthGuide hg
+		INNER JOIN Assessment a ON hg.Overall_Wellbeing = a.Overall_Wellbeing
+		WHERE a.SeniorID = ?;`
 
 	// Execute the query
 	rows, err := db.Query(query, seniorID)
