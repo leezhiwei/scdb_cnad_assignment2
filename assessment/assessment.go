@@ -110,16 +110,17 @@ func calculateRisk(w http.ResponseWriter, r *http.Request, assessment Assessment
 		score += 2
 	}
 
-	if score <= 2 {
+	if score <= 5 {
 		//return "Low Risk"
 		OvrWellBg = "Low Risk"
-	} else if score <= 4 {
+	} else if score <= 10 {
 		//return "Moderate Risk"
 		OvrWellBg = "Moderate Risk"
 	} else {
 		//return "High Risk - Please consult a healthcare professional."
 		OvrWellBg = "High Risk - Please consult a healthcare professional"
 	}
+	fmt.Println(score)
 
 	// Insert assessment in DB
 	// Execute the query using a prepared statement with placeholder

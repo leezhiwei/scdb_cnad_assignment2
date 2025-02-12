@@ -7,7 +7,7 @@
 - Setup Instructions
 
 ### About the Project
-SCDB aims to provide seniors with an easy-to-use digital platform for preliminary health and fall risk self-assessment in the comfort of their homes. Through AI-driven assessment forms, photo-based injury analysis, and real-time video or audio calls with doctors, we offer proactive healthcare solutions. By leveraging technology, we ensure early detection of health concerns and seamless access to medical assistance, enhancing the safety and well-being of elderly individuals.
+SCDB aims to provide seniors with an easy-to-use digital platform for preliminary health and fall risk self-assessment in the comfort of their homes. Through AI-driven assessment forms, and real-time video or audio calls with doctors, we offer proactive healthcare solutions. By leveraging technology, we ensure early detection of health concerns and seamless access to medical assistance, enhancing the safety and well-being of elderly individuals.
 
 ## Features
 ### Gait Analysis:
@@ -75,4 +75,15 @@ Prerequisites:
 5. Start each microservice independently(run all .go files and debug console)
 6. Start the application:
 7. Serve the static website using a localhost 
+
+### References:
+GAIT Analysis:
+[README Reference](gait_analysis/README.md)
+AI QnA:
+- https://huggingface.co/m42-health/Llama3-Med42-8B
+- https://huggingface.co/emircanerol/Llama3-Med42-8B-4bit
+- https://huggingface.co/emircanerol/Llama3-Med42-8B-4bit/tree/main
+- https://huggingface.co/docs/chat-ui/en/configuration/models/providers/llamacpp
+- https://www.analyticsvidhya.com/blog/2024/04/how-to-access-llama3-with-flask/
+
 
