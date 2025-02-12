@@ -103,17 +103,17 @@ func calculateRisk(w http.ResponseWriter, r *http.Request, assessment Assessment
 	if assessment.Medication == true {
 		score += 1
 	}
-	if assessment.HistoryOfFalls == true {
+	if assessment.HistoryOfFalls {
 		score += 2
 	}
 	if assessment.KneeInjury == true {
 		score += 2
 	}
 
-	if score <= 5 {
+	if score <= 10 {
 		//return "Low Risk"
 		OvrWellBg = "Low Risk"
-	} else if score <= 10 {
+	} else if score <= 14 {
 		//return "Moderate Risk"
 		OvrWellBg = "Moderate Risk"
 	} else {
