@@ -100,26 +100,27 @@ func calculateRisk(w http.ResponseWriter, r *http.Request, assessment Assessment
 	score += (6 - assessment.LegStrength)
 	score += (6 - assessment.Vision)
 	score += (6 - assessment.Balance)
-	if assessment.Medication {
+	if assessment.Medication == true {
 		score += 1
 	}
 	if assessment.HistoryOfFalls {
 		score += 2
 	}
-	if assessment.KneeInjury {
+	if assessment.KneeInjury == true {
 		score += 2
 	}
 
-	if score <= 2 {
+	if score <= 10 {
 		//return "Low Risk"
 		OvrWellBg = "Low Risk"
-	} else if score <= 4 {
+	} else if score <= 14 {
 		//return "Moderate Risk"
 		OvrWellBg = "Moderate Risk"
 	} else {
 		//return "High Risk - Please consult a healthcare professional."
 		OvrWellBg = "High Risk - Please consult a healthcare professional"
 	}
+	fmt.Println(score)
 
 	// Insert assessment in DB
 	// Execute the query using a prepared statement with placeholder
@@ -135,20 +136,6 @@ func calculateRisk(w http.ResponseWriter, r *http.Request, assessment Assessment
 	defer insertBillresults.Close()
 
 	return OvrWellBg
-}
-
-func rechealthGuide(assessment Assessment) {
-	// Check for leg strength, Vision and balance
-	// Add values into database
-	if assessment.LegStrength < 3 || assessment.Balance < 3 {
-		// Recommended to improve leg strength and balance with guided exercises
-	}
-	if assessment.Vision < 3 {
-		// Regular vision check-ups recommended or eye exercises
-	}
-	if assessment.HistoryOfFalls == true {
-		// Video on how to prevent falls
-	}
 }
 
 type Config struct {
