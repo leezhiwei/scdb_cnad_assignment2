@@ -1,0 +1,27 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: scdb-lb
+  namespace: scdb-cnad
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: assessmentroute
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: healthguideroute
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: loginroute
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: mainroutes
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: medqnaroute
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: videoroute
+  loadBalancer:
+    type: RoundRobin
