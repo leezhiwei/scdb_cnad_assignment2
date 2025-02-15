@@ -8,7 +8,6 @@ import (
 	"compress/gzip"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -36,8 +35,6 @@ func MustReadStdin() string {
 			break
 		}
 	}
-
-	fmt.Println("https://www.youtube.com/watch?v=WJ3piOcYYQs")
 
 	return in
 }

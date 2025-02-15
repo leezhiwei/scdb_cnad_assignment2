@@ -177,12 +177,12 @@ CREATE TABLE `Emergency_Contact` (
 LOCK TABLES `Emergency_Contact` WRITE;
 /*!40000 ALTER TABLE `Emergency_Contact` DISABLE KEYS */;
 INSERT INTO `Emergency_Contact` VALUES
-(5,'ghost in hotel',91542235,3),
+(5,'JX',91542235,3),
 (6,'Name',123456,3),
 (7,'peter',11223345,3),
 (8,'YQY',91542235,3),
 (9,'YQY',91542235,3),
-(10,'ghost in hotel',85178498,3),
+(10,'JX',85178498,3),
 (16,'YE QIYANG',85178498,4),
 (17,'YQY2',91542235,4);
 /*!40000 ALTER TABLE `Emergency_Contact` ENABLE KEYS */;

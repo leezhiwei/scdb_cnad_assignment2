@@ -1,132 +1,175 @@
 <!DOCTYPE HTML>
 <!--
-	Phantom by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+ Phantom by HTML5 UP
+ html5up.net | @ajlkn
+ Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 -->
 <html>
-	<head>
-		<title>SCDB - Assessment Form</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-	</head>
-	<body class="is-preload">
-		<!-- Wrapper -->
-			<div id="wrapper">
+ <head>
+  <title>SCDB - Assessment Form</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <link rel="stylesheet" href="assets/css/main.css" />
+  <link rel="stylesheet" href="assets/css/assessment.css" />
+  <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+ </head>
+ <body class="is-preload">
+  <!-- Wrapper -->
+   <div id="wrapper">
 
-				<!-- Header -->
-					<header id="header">
-						<div class="inner">
+    <!-- Header -->
+     <header id="header">
+      <div class="inner">
 
-							<!-- Logo -->
-								<a href="index.html" class="logo">
-									<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">Senior Care Doctor Befrienders</span>
-								</a>
+       <!-- Logo -->
+        <a href="index.html" class="logo">
+         <span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">Senior Care Doctor Befrienders</span>
+        </a>
 
-							<!-- Nav -->
-								<nav>
-									<ul>
-										<li><a href="#menu">Menu</a></li>
-									</ul>
-								</nav>
+       <!-- Nav -->
+        <nav>
+         <ul>
+          <li><a href="#menu">Menu</a></li>
+         </ul>
+        </nav>
 
-						</div>
-					</header>
+      </div>
+     </header>
 
-				<!-- Menu -->
-					<nav id="menu">
-						<h2>Menu</h2>
-						<ul>
-							<li><a href="index.html">Home</a></li>
-							<li><a href="userprofile.html">My Profile</a></li>
-							<li><a href="emergencycontact.html">Call Doctor</a></li>
-							<li><a href="setting.html">Setting</a></li>
-							<li><a href="Login.html">Logout</a></li>
-						</ul>
-					</nav>
+    <!-- Menu -->
+     <nav id="menu">
+      <h2>Menu</h2>
+      <ul>
+       <li><a href="index.html">Home</a></li>
+       <li><a href="userprofile.html">My Profile</a></li>
+       <li><a href="emergencycontact.html">Call Doctor</a></li>
+       <li><a href="setting.html">Setting</a></li>
+       <li><a href="Login.html">Logout</a></li>
+      </ul>
+     </nav>
 
-				<!-- Main -->
-					<div id="main">
-						<div class="inner">
-							<form id="healthasst" action="" method="POST">
-								<label>How would you rate your leg strength (1-5)? (1 for weak, 5 for strong)</label><br>
-								<input type="number" name="leg_strength" min="1" max="5" required><br><br>
-					
-								<label>How would you rate your eyesight (1-5)? (1 for not so good, 5 for good eyesight)</label><br>
-								<input type="number" name="vision" min="1" max="5" required><br><br>
-					
-								<label>How would you rate your balance (1-5)? (1 for trembling, 5 for stable)</label><br>
-								<input type="number" name="balance" min="1" max="5" required><br><br>
-					
-								<label>Are you currently taking medication that affects your balance? (1 for Yes, 0 for No)</label><br>
-								<input type="number" name="medication" min="0" max="1" required><br><br>
-					
-								<label>Have you had a fall in the last year? (1 for Yes, 0 for No)</label><br>
-								<input type="number" name="history_of_falls" min="0" max="1" required><br><br>
-					
-								<label>Do you have a knee injury? (1 for Yes, 0 for No)</label><br>
-								<input type="number" name="knee_injury" min="0" max="1" required><br><br>
-					
-								<input type="submit" value="Submit">
-							</form>
-							<p id="response"></p>
-						</div>
-					</div>
+    <!-- Main -->
+     <div id="main">
+      <div class="inner">
+       <form id="healthasst" action="" method="POST">
+        <label>How would you rate your leg strength (1-5)? (1 for weak, 5 for strong)</label>
 
-				<!-- Footer -->
-					<footer id="footer">
-						<div class="inner">
-							<section>
-								<h2>Get in touch</h2>
-								<form method="post" action="#">
-									<div class="fields">
-										<div class="field half">
-											<input type="text" name="name" id="name" placeholder="Name" />
-										</div>
-										<div class="field half">
-											<input type="email" name="email" id="email" placeholder="Email" />
-										</div>
-										<div class="field">
-											<textarea name="message" id="message" placeholder="Message"></textarea>
-										</div>
-									</div>
-									<ul class="actions">
-										<li><input type="submit" value="Send" class="primary" /></li>
-									</ul>
-								</form>
-							</section>
-							<section>
-								<h2>Follow</h2>
-								<ul class="icons">
-									<li><a href="#" class="icon brands style2 fa-twitter"><span class="label">Twitter</span></a></li>
-									<li><a href="#" class="icon brands style2 fa-facebook-f"><span class="label">Facebook</span></a></li>
-									<li><a href="#" class="icon brands style2 fa-instagram"><span class="label">Instagram</span></a></li>
-									<li><a href="#" class="icon brands style2 fa-dribbble"><span class="label">Dribbble</span></a></li>
-									<li><a href="#" class="icon brands style2 fa-github"><span class="label">GitHub</span></a></li>
-									<li><a href="#" class="icon brands style2 fa-500px"><span class="label">500px</span></a></li>
-									<li><a href="#" class="icon solid style2 fa-phone"><span class="label">Phone</span></a></li>
-									<li><a href="#" class="icon solid style2 fa-envelope"><span class="label">Email</span></a></li>
-								</ul>
-							</section>
-							<ul class="copyright">
-								<li>&copy; Untitled. All rights reserved</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-							</ul>
-						</div>
-					</footer>
+        <!-- <input type="number" name="leg_strength" min="1" max="5" required>
 
-			</div>
+ -->
+        <input type="range" min="1" max="5" value="3" class="slider" id="leg_strength" name="leg_strength">Leg Strength:<text id="strengthscale" style="display: inline"></text>
 
-		<!-- Scripts -->
-		<script src="assets/js/endpoints.js"></script>
-		    <script src="assets/js/assessment.js"></script>
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/assessment.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
-			<script src="assets/js/checklogin.js"></script>
-	</body>
+        <label>How would you rate your eyesight (1-5)? (1 for not so good, 5 for good eyesight)</label>
+
+        <!-- <input type="number" name="vision" min="1" max="5" required>
+
+ -->
+        <input type="range" min="1" max="5" value="3" class="slider" id="vision" name="vision">Vision visibility:<text id="strengthscale" style="display: inline"></text>
+     
+        <label>How would you rate your balance (1-5)? (1 for trembling, 5 for stable)</label>
+
+        <!-- <input type="number" name="balance" min="1" max="5" required>
+
+ -->
+        <input type="range" min="1" max="5" value="3" class="slider" id="balance" name="balance">Balance stability:<text id="strengthscale" style="display: inline"></text>
+
+        <label>Are you currently taking medication that affects your balance? (1 for Yes, 0 for No)</label>
+
+        <!-- <input type="number" name="medication" min="0" max="1" required>
+
+ -->
+        <input type="radio" id="medButtonYes" name="medication" value="1" required></input>
+        <label for="medButtonYes">Yes</label>
+        <input type="radio" id="medButtonNo" name="medication" value="0" required></input>
+        <label for="medButtonNo">No</label>
+     
+        <label>Have you had a fall in the last year? (1 for Yes, 0 for No)</label>
+
+        <!-- <input type="number" name="history_of_falls" min="0" max="1" required>
+
+ -->
+        <input type="radio" id="fallButtonYes" name="history_of_falls" value="1" required></input>
+        <label for="fallButtonYes">Yes</label>
+        <input type="radio" id="fallButtonNo" name="history_of_falls" value="0" required></input>
+        <label for="fallButtonNo">No</label>
+
+        <label>Do you have a knee injury? (1 for Yes, 0 for No)</label>
+
+        <!-- <input type="number" name="knee_injury" min="0" max="1" required>
+
+ -->
+        <input type="radio" id="kneeButtonYes" name="knee_injury" value="1" required></input>
+        <label for="kneeButtonYes">Yes</label>
+        <input type="radio" id="kneeButtonNo" name="knee_injury" value="0" required></input>
+        <label for="kneeButtonNo">No</label>
+        
+
+
+        <input type="submit" value="Submit">
+       </form>
+       <p id="response"></p>
+      </div>
+     </div>
+
+    <!-- Footer -->
+     <footer id="footer">
+      <div class="inner">
+       <section>
+        <h2>Get in touch</h2>
+        <form method="post" action="#">
+         <div class="fields">
+          <div class="field half">
+           <input type="text" name="name" id="name" placeholder="Name" />
+          </div>
+          <div class="field half">
+           <input type="email" name="email" id="email" placeholder="Email" />
+          </div>
+          <div class="field">
+           <textarea name="message" id="message" placeholder="Message"></textarea>
+          </div>
+         </div>
+         <ul class="actions">
+          <li><input type="submit" value="Send" class="primary" /></li>
+         </ul>
+        </form>
+       </section>
+       <section>
+        <h2>Follow</h2>
+        <ul class="icons">
+         <li><a href="#" class="icon brands style2 fa-twitter"><span class="label">Twitter</span></a></li>
+         <li><a href="#" class="icon brands style2 fa-facebook-f"><span class="label">Facebook</span></a></li>
+         <li><a href="#" class="icon brands style2 fa-instagram"><span class="label">Instagram</span></a></li>
+         <li><a href="#" class="icon brands style2 fa-dribbble"><span class="label">Dribbble</span></a></li>
+         <li><a href="#" class="icon brands style2 fa-github"><span class="label">GitHub</span></a></li>
+         <li><a href="#" class="icon brands style2 fa-500px"><span class="label">500px</span></a></li>
+         <li><a href="#" class="icon solid style2 fa-phone"><span class="label">Phone</span></a></li>
+         <li><a href="#" class="icon solid style2 fa-envelope"><span class="label">Email</span></a></li>
+        </ul>
+       </section>
+       <ul class="copyright">
+        <li>&copy; Untitled. All rights reserved</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+       </ul>
+      </div>
+     </footer>
+
+   </div>
+
+  <!-- Scripts -->
+  <script>
+  document.getElementById("leg_strength").oninput = function() 
+  {
+   document.getElementById("strengthscale").innerHTML = Number(this.value).toFixed(1);
+  }
+  </script>
+  <script src="assets/js/endpoints.js"></script>
+  <script src="assets/js/assessment.js"></script>
+  <script src="assets/js/jquery.min.js"></script>
+  <script src="assets/js/browser.min.js"></script>
+  <script src="assets/js/breakpoints.min.js"></script>
+  <script src="assets/js/assessment.js"></script>
+  <script src="assets/js/util.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/checklogin.js"></script>
+ </body>
 </html>
+ 
