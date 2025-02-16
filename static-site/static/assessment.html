@@ -64,14 +64,14 @@
         <!-- <input type="number" name="vision" min="1" max="5" required>
 
  -->
-        <input type="range" min="1" max="5" value="3" class="slider" id="vision" name="vision">Vision visibility:<text id="strengthscale" style="display: inline"></text>
+        <input type="range" min="1" max="5" value="3" class="slider" id="vision" name="vision">Vision visibility:<text id="visionscale" style="display: inline"></text>
      
         <label>How would you rate your balance (1-5)? (1 for trembling, 5 for stable)</label>
 
         <!-- <input type="number" name="balance" min="1" max="5" required>
 
  -->
-        <input type="range" min="1" max="5" value="3" class="slider" id="balance" name="balance">Balance stability:<text id="strengthscale" style="display: inline"></text>
+        <input type="range" min="1" max="5" value="3" class="slider" id="balance" name="balance">Balance stability:<text id="balancescale" style="display: inline"></text>
 
         <label>Are you currently taking medication that affects your balance? (1 for Yes, 0 for No)</label>
 
@@ -159,6 +159,14 @@
   document.getElementById("leg_strength").oninput = function() 
   {
    document.getElementById("strengthscale").innerHTML = Number(this.value).toFixed(1);
+  }
+  document.getElementById("vision").oninput = function() 
+  {
+   document.getElementById("visionscale").innerHTML = Number(this.value).toFixed(1);
+  }
+  document.getElementById("balance").oninput = function() 
+  {
+   document.getElementById("balancescale").innerHTML = Number(this.value).toFixed(1);
   }
   </script>
   <script src="assets/js/endpoints.js"></script>
